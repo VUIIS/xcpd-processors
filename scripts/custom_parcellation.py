@@ -56,8 +56,8 @@ warp_atlases_to_bold_space = ApplyTransforms(
     input_image=args.atlas_niigz,
     transforms=transform_files,
 )
-watbs_results = warp_atlases_to_bold_space.run()
-warped_atlas_niigz = watbs_results.outputs.output_image
+warp_results = warp_atlases_to_bold_space.run()
+warped_atlas_niigz = warp_results.outputs.output_image
 
 # Step 3. Parcellate the BOLD file
 interface = NiftiConnect(
