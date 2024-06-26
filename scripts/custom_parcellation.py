@@ -7,7 +7,7 @@ import argparse
 import os
 
 from xcp_d.interfaces.ants import ApplyTransforms
-from xcp_d.interfaces.connectivity import NiftiConnect
+from xcp_d.interfaces.connectivity import NiftiParcellate
 from xcp_d.interfaces.nilearn import IndexImage
 from xcp_d.utils.utils import get_std2bold_xfms
 
@@ -59,10 +59,10 @@ warp_results = warp_atlases_to_bold_space.run()
 warped_atlas_niigz = warp_results.outputs.output_image
 
 # Step 3. Parcellate the BOLD file
-interface = NiftiConnect(
+interface = NiftiParcellate(
     filtered_file=args.fmri_niigz,
     mask=args.mask_niigz,
-    temporal_mask=args.temporalmask_niigz,
+    temporal_mask=args.temporalmask_tsv,
     atlas=warped_atlas_niigz,
     atlas_labels=args.atlaslabels_tsv,
     min_coverage=args.min_coverage,
