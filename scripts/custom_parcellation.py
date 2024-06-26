@@ -7,7 +7,7 @@ import argparse
 import os
 
 from xcp_d.interfaces.ants import ApplyTransforms
-from xcp_d.interfaces.connectivity import NiftiParcellate
+from xcp_d.interfaces.connectivity import NiftiParcellate, TSVConnect
 from xcp_d.interfaces.nilearn import IndexImage
 from xcp_d.utils.utils import get_std2bold_xfms
 
@@ -69,7 +69,15 @@ interface = NiftiParcellate(
 )
 results = interface.run()
 
+interface2 = TSVConnect(
+    timeseries=results.outputs.timeseries,
+    )
+results2 = interface2.run()
+
+print(results.outputs)
+print(results2.outputs)
+
 # These are your outputs
-timeseries_file = results.outputs.timeseries
-correlations_file = results.outputs.correlations
+#timeseries_file = results.outputs.timeseries
+#correlations_file = results.outputs.correlations
 
