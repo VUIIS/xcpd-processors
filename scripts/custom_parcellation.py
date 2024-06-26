@@ -7,9 +7,8 @@ import argparse
 import os
 
 from xcp_d.interfaces.ants import ApplyTransforms
-from xcp_d.interfaces.connectivity import CiftiConnect, NiftiConnect
+from xcp_d.interfaces.connectivity import NiftiConnect
 from xcp_d.interfaces.nilearn import IndexImage
-from xcp_d.interfaces.workbench import CiftiCreateDenseFromTemplate, CiftiParcellate
 from xcp_d.utils.utils import get_std2bold_xfms
 
 
