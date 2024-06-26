@@ -18,7 +18,7 @@ parser.add_argument('--temporalmask_tsv', required=True)
 parser.add_argument('--fmri_niigz', required=True)
 parser.add_argument('--atlas_niigz', required=True)
 parser.add_argument('--atlaslabels_tsv', required=True)
-parser.add_argument('--min_coverage', default=0.5)
+parser.add_argument('--min_coverage', type=float, default=0.5)
 args = parser.parse_args()
 
 
@@ -59,14 +59,13 @@ warp_results = warp_atlases_to_bold_space.run()
 warped_atlas_niigz = warp_results.outputs.output_image
 
 # Step 3. Parcellate the BOLD file
+#    temporal_mask=args.temporalmask_tsv,
 interface = NiftiParcellate(
     filtered_file=args.fmri_niigz,
     mask=args.mask_niigz,
-    temporal_mask=args.temporalmask_tsv,
     atlas=warped_atlas_niigz,
     atlas_labels=args.atlaslabels_tsv,
     min_coverage=args.min_coverage,
-    correlate=True,
 )
 results = interface.run()
 
