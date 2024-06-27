@@ -45,7 +45,7 @@ command:
     --fs-license-file /opt/license.txt
     --skip-dcan-qc
     --smoothing 0
-    --atlases Glasser
+    --atlases Glasser,Gordon
     --nuisance-regressors acompcor
     --fd-thresh 0.3
     --min-time 300
