@@ -11,6 +11,20 @@ from xcp_d.interfaces.connectivity import NiftiParcellate, TSVConnect
 from xcp_d.interfaces.nilearn import IndexImage
 from xcp_d.utils.utils import get_std2bold_xfms
 
+# Outputs are stored in the working directory
+# correlations.tsv                        Connectivity matrix
+# coverage.tsv                            Coverage for each ROI in the fMRI image
+# img_3d.nii.gz                           First fMRI volume (not needed again)
+# timeseries.tsv                          Extracted preprocessed ROI time series
+# NNN_atlas-CC20240607_dseg_trans.nii.gz  Resampled atlas
+
+## Step 1. Inputs
+# mask_niigz       :   fmriprep func/NNN_space-MNI152NLin6Asym_desc-brain_mask.nii.gz
+# temporalmask_tsv :   xcpd func/NNN_outliers.tsv, or "" to not use
+# fmri_niigz       :   xcpd func/NNN_space-MNI152NLin2009cAsym_desc-denoised_bold.nii.gz
+# atlas_niigz      :   custom atlas in the same space as the mask, fmri images
+# atlaslabels_tsv  :   atlas labels. Columns are numerical 'index' and text 'label'
+# min_coverage     :   should match the param given for the xcpd run
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mask_niigz', required=True)
@@ -22,26 +36,7 @@ parser.add_argument('--min_coverage', type=float, default=0.5)
 args = parser.parse_args()
 
 
-#xcpd_dir = "/Users/taylor/Documents/datasets/ds003643/derivatives/xcp_d/sub-EN100/func"
-#fmriprep_dir = "/Users/taylor/Documents/datasets/ds003643/derivatives/fmriprep/sub-EN100/func"
-
-#mask = os.path.join(fmriprep_dir, "sub-EN100_task-lppEN_run-1_space-MNI152NLin6Asym_desc-brain_mask.nii.gz")
-#temporal_mask = os.path.join(xcpd_dir, "sub-EN100_task-lppEN_run-1_outliers.tsv")
-
-#min_coverage = 0.5  # use the same threshold you used for the XCP-D call
-#correlate = True
-
-#nifti_file = os.path.join(xcpd_dir, "sub-EN100_task-lppEN_run-1_space-MNI152NLin6Asym_desc-denoised_bold.nii.gz")
-#nifti_atlas = "tpl-MNI152NLin6Asym_atlas-Schaefer2018v0143_res-02_desc-100Parcels17Networks_dseg.nii.gz"
-
-# Step 1. Mock up an atlas labels file
-# The file must have two columns: index and label
-# I decided to just use one of the ones from XCP-D.
-#nifti_atlas_labels = "atlas-Schaefer2018v0143_desc-100Parcels17Networks_dseg.tsv"
-
-
-
-# Step 2. Warp the atlas to the same space as the BOLD file
+## Step 2. Warp the atlas to the same space as the BOLD file
 transform_files = get_std2bold_xfms(args.fmri_niigz)
 
 grab_first_volume = IndexImage(in_file=args.fmri_niigz, index=0)
@@ -58,7 +53,8 @@ warp_atlases_to_bold_space = ApplyTransforms(
 warp_results = warp_atlases_to_bold_space.run()
 warped_atlas_niigz = warp_results.outputs.output_image
 
-# Step 3. Parcellate the BOLD file
+
+## Step 3. Parcellate the BOLD file
 #    temporal_mask=args.temporalmask_tsv,
 interface = NiftiParcellate(
     filtered_file=args.fmri_niigz,
