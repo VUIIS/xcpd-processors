@@ -7,8 +7,8 @@ jobtemplate: job_template_v3.txt
 
 containers:
   - name: xcpd
-    path: xcp_d_0.7.0.sif
-    source: docker://pennlinc/xcp_d:0.7.0
+    path: xcp_d_0.7.5.sif
+    source: docker://pennlinc/xcp_d:0.7.5
 
 requirements:
   walltime: 1-0

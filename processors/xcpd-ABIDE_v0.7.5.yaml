@@ -7,8 +7,8 @@ jobtemplate: job_template_v3.txt
 
 containers:
   - name: xcpd
-    path: xcp_d_0.7.0.sif
-    source: docker://pennlinc/xcp_d:0.7.0
+    path: xcp_d_0.7.5.sif
+    source: docker://pennlinc/xcp_d:0.7.5
 
 requirements:
   walltime: 1-0
@@ -24,12 +24,12 @@ inputs:
     scans:
 
       - name: scan_fmri
-        types: rest1APA_FMRI_MB3_2_5mm_1300
+        types: REST
 
     assessors:
         
         - name: assr_fmriprep
-          proctypes: fmriprep-BAIS_v23
+          proctypes: fmriprep-ABIDE_v23
           resources:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
@@ -44,14 +44,14 @@ command:
     --work-dir /tmp
     --fs-license-file /opt/license.txt
     --skip-dcan-qc
+    --dummy-scans auto
     --smoothing 0
     --nuisance-regressors acompcor
-    --fd-thresh 0.3
-    --min-time 300
-    --exact-time 300
+    --fd-thresh 0
     --lower-bpf 0.01
     --upper-bpf 0.10
     --min-coverage 0.5
+    --skip-parcellation
     /INPUTS/fmriprepBIDS/fmriprepBIDS
     /OUTPUTS/BIDS
     participant
