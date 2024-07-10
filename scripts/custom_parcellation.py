@@ -35,7 +35,7 @@ parser.add_argument('--min_coverage', type=float, default=0.5)
 parser.add_argument('--out_dir', required=True)
 args = parser.parse_args()
 
-## Parse the atlas label from the atlas filename
+## Parse the info fields from the filenames
 ents_atlas = bids.layout.parse_file_entities(args.atlas_niigz)
 ents_mask = bids.layout.parse_file_entities(args.mask_niigz)
 ents_fmri = bids.layout.parse_file_entities(args.fmri_niigz)
@@ -93,7 +93,7 @@ correlations_tsv = results2.outputs.correlations
 # Example:
 # NNN = sub-SUB_ses-SES_task-TASK_run-RUN_space-MNI152NLin2009cAsym
 
-#   atlases/atlas-Glasser/atlas-Glasser_space-MNI152NLin2009cAsym_dseg.nii.gz
+#   atlases/atlas-Glasser/atlas-Glasser_space-MNI152NLin2009cAsym_dseg.nii.gz   # Sampling matches preprocessed func
 #   func/NNN_seg-Glasser_stat-coverage_bold.tsv
 #   func/NNN_seg-Glasser_stat-mean_timeseries.tsv
 #   func/NNN_seg-Glasser_stat-pearsoncorrelation_relmat.tsv
