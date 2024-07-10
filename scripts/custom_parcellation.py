@@ -4,6 +4,7 @@
 # https://github.com/PennLINC/xcp_d-examples/blob/main/custom_parcellation.ipynb
 
 import argparse
+import bids
 import os
 
 from xcp_d.interfaces.ants import ApplyTransforms
@@ -19,8 +20,7 @@ from xcp_d.utils.utils import get_std2bold_xfms
 # NNN_atlas-CC20240607_dseg_trans.nii.gz  Resampled atlas
 
 ## Step 1. Inputs
-# mask_niigz       :   fmriprep func/NNN_space-MNI152NLin6Asym_desc-brain_mask.nii.gz
-# temporalmask_tsv :   xcpd func/NNN_outliers.tsv, or "" to not use
+# mask_niigz       :   fmriprep func/NNN_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz
 # fmri_niigz       :   xcpd func/NNN_space-MNI152NLin2009cAsym_desc-denoised_bold.nii.gz
 # atlas_niigz      :   custom atlas in the same space as the mask, fmri images
 # atlaslabels_tsv  :   atlas labels. Columns are numerical 'index' and text 'label'
@@ -28,15 +28,29 @@ from xcp_d.utils.utils import get_std2bold_xfms
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mask_niigz', required=True)
-parser.add_argument('--temporalmask_tsv', required=True)
 parser.add_argument('--fmri_niigz', required=True)
 parser.add_argument('--atlas_niigz', required=True)
 parser.add_argument('--atlaslabels_tsv', required=True)
 parser.add_argument('--min_coverage', type=float, default=0.5)
+parser.add_argument('--out_dir', required=True)
 args = parser.parse_args()
 
+## Parse the atlas label from the atlas filename
+ents_atlas = bids.layout.parse_file_entities(args.atlas_niigz)
+ents_mask = bids.layout.parse_file_entities(args.mask_niigz)
+ents_fmri = bids.layout.parse_file_entities(args.fmri_niigz)
 
-## Step 2. Warp the atlas to the same space as the BOLD file
+print(ents_atlas)
+print(ents_fmri)
+
+# Verify that spaces match
+if ents_atlas.space != ents_fmri.space:
+    raise Exception('Non-matching space for atlas and fmri')
+if ents_atlas.space != ents_mask.space:
+    raise Exception('Non-matching space for atlas and mask')
+
+
+## Warp the atlas to the same space as the BOLD file
 transform_files = get_std2bold_xfms(args.fmri_niigz)
 
 grab_first_volume = IndexImage(in_file=args.fmri_niigz, index=0)
@@ -51,29 +65,41 @@ warp_atlases_to_bold_space = ApplyTransforms(
     transforms=transform_files,
 )
 warp_results = warp_atlases_to_bold_space.run()
-warped_atlas_niigz = warp_results.outputs.output_image
+warpedatlas_niigz = warp_results.outputs.output_image
 
 
-## Step 3. Parcellate the BOLD file
-#    temporal_mask=args.temporalmask_tsv,
+## Parcellate the BOLD file
+# The preprocessed image from XCP_D will be censored already, if censoring is enabled.
+# But the 'exact' number of volumes approach would need to be implemented here if wanted.
 interface = NiftiParcellate(
     filtered_file=args.fmri_niigz,
     mask=args.mask_niigz,
-    atlas=warped_atlas_niigz,
+    atlas=warpedatlas_niigz,
     atlas_labels=args.atlaslabels_tsv,
     min_coverage=args.min_coverage,
 )
 results = interface.run()
+coverage_tsv = results.outputs.coverage
+timeseries_tsv = results.outputs.timeseries
 
 interface2 = TSVConnect(
     timeseries=results.outputs.timeseries,
     )
 results2 = interface2.run()
+correlations_tsv = results2.outputs.correlations
 
-print(results.outputs)
-print(results2.outputs)
+# Set output filenames according to xcpd scheme and put in xcpd location
 
-# These are your outputs
-#timeseries_file = results.outputs.timeseries
-#correlations_file = results.outputs.correlations
+# Example:
+# NNN = sub-SUB_ses-SES_task-TASK_run-RUN_space-MNI152NLin2009cAsym
+
+#   atlases/atlas-Glasser/atlas-Glasser_space-MNI152NLin2009cAsym_dseg.nii.gz
+#   func/NNN_seg-Glasser_stat-coverage_bold.tsv
+#   func/NNN_seg-Glasser_stat-mean_timeseries.tsv
+#   func/NNN_seg-Glasser_stat-pearsoncorrelation_relmat.tsv
+
+
+# FIXME ALFF and REHO?
+# func/NNN_seg-Glasser_stat-alff_bold.tsv
+# func/NNN_seg-Glasser_stat-reho_bold.tsv
 
