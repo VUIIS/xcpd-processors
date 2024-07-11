@@ -134,7 +134,7 @@ interface2 = TSVConnect(
 results2 = interface2.run()
 correlations_tsv = results2.outputs.correlations
 
-# Set output filenames according to xcpd scheme and put in xcpd location. Use bidslayout tools for write
+# FIXME Set output filenames according to xcpd scheme and put in xcpd location. Use bidslayout tools for write
 
 # Example:
 # NNN = sub-SUB_ses-SES_task-TASK_run-RUN_space-MNI152NLin2009cAsym
