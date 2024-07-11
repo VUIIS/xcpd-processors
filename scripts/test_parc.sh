@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
-funcdir=../INPUTS/fmriprep/fmriprepBIDS/sub-Caltech51456/ses-Caltech51456/func
-xcpdir=../INPUTS/xcpd/xcpdBIDS/sub-Caltech51456/ses-Caltech51456/func
-roidir=../rois
-
 ./custom_parcellation.py \
-    --mask_niigz ${funcdir}/sub-Caltech51456_ses-Caltech51456_task-rest_run-1_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz \
-    --fmri_niigz ${xcpdir}/sub-Caltech51456_ses-Caltech51456_task-rest_run-1_space-MNI152NLin2009cAsym_desc-denoised_bold.nii.gz \
-    --atlas_niigz ${roidir}/space-MNI152NLin6Asym_atlas-CC20240607_dseg.nii.gz \
-    --atlaslabels_tsv ${roidir}/atlas-CC20240607_dseg.tsv \
+    --fmriprep_dir ../INPUTS/fmriprep/fmriprepBIDS \
+    --xcpd_dir ../INPUTS/xcpd/xcpdBIDS \
+    --atlas_dir ../atlases \
+    --atlas CC20240607 \
     --min_coverage 0.5 \
     --out_dir ../OUTPUTS

@@ -27,13 +27,26 @@ from xcp_d.utils.utils import get_std2bold_xfms
 # min_coverage     :   should match the param given for the xcpd run
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--mask_niigz', required=True)
-parser.add_argument('--fmri_niigz', required=True)
-parser.add_argument('--atlas_niigz', required=True)
-parser.add_argument('--atlaslabels_tsv', required=True)
+parser.add_argument('--fmriprep_dir', required=True)
+parser.add_argument('--xcpd_dir', required=True)
+parser.add_argument('--space', default='MNI152NLin2009cAsym')
+parser.add_argument('--atlas', required=True)
+parser.add_argument('--atlas_dir', required=True)
 parser.add_argument('--min_coverage', type=float, default=0.5)
 parser.add_argument('--out_dir', required=True)
 args = parser.parse_args()
+
+# Find files
+bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
+bids_xcpd = bids.layout.BIDSLayout(args.xcpd_dir, validate=False)
+bids_atlas = bids.layout.BIDSLayout(args.atlas_dir, validate=False)
+
+print(bids_fmriprep)
+print(bids_xcpd)
+print(bids_atlas)
+
+sys.exit(0)
+
 
 ## Parse the info fields from the filenames
 ents_atlas = bids.layout.parse_file_entities(args.atlas_niigz)
