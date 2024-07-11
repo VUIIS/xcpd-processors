@@ -30,7 +30,13 @@ parser.add_argument('--run', default='1',
     help='Which run to use (default to 1)')
 parser.add_argument('--min_coverage', type=float, default=0.5, 
     help='Should match the param given for the xcpd run')
+parser.add_argument('--work_dir', default='.',
+    help='Working directory (default .)')
 args = parser.parse_args()
+
+# Change to working dir as some commands don't allow specifying where
+# else files might go
+os.chdir(args.work_dir)
 
 # Parse BIDS structures
 bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
