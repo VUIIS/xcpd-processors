@@ -96,14 +96,10 @@ print(fmri_niigz.path)
 print(mask_niigz.path)
 
 
-sys.exit(0)
-# FIXME Verify we only have 1 of everything and pull objects out of list
-
-
 ## Warp the atlas to the same space as the BOLD file
-transform_files = get_std2bold_xfms(fmri_niigz)
+transform_files = get_std2bold_xfms(fmri_niigz.path)
 
-grab_first_volume = IndexImage(in_file=fmri_niigz, index=0)
+grab_first_volume = IndexImage(in_file=fmri_niigz.path, index=0)
 gfv_results = grab_first_volume.run()
 
 warp_atlases_to_bold_space = ApplyTransforms(
@@ -111,7 +107,7 @@ warp_atlases_to_bold_space = ApplyTransforms(
     input_image_type=3,
     dimension=3,
     reference_image=gfv_results.outputs.out_file,
-    input_image=atlas_niigz,
+    input_image=atlas_niigz.path,
     transforms=transform_files,
 )
 warp_results = warp_atlases_to_bold_space.run()
@@ -122,10 +118,10 @@ warpedatlas_niigz = warp_results.outputs.output_image
 # The preprocessed image from XCP_D will be censored already, if censoring is enabled.
 # But the 'exact' volumes approach would need to be implemented here if wanted.
 interface = NiftiParcellate(
-    filtered_file=fmri_niigz,
-    mask=mask_niigz,
+    filtered_file=fmri_niigz.path,
+    mask=mask_niigz.path,
     atlas=warpedatlas_niigz,
-    atlas_labels=atlas_tsv,
+    atlas_labels=atlas_tsv.path,
     min_coverage=args.min_coverage,
 )
 results = interface.run()
