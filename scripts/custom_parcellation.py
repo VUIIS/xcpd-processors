@@ -23,8 +23,6 @@ parser.add_argument('--space', default='MNI152NLin2009cAsym',
     help='Space to use if multiple (default to MNI152NLin2009cAsym)')
 parser.add_argument('--atlas', required=True, 
     help='Name of atlas to use')
-parser.add_argument('--atlas_dir', required=True, 
-    help='Where atlas and label file are found')
 parser.add_argument('--task', default='rest', 
     help='Which task to use if multiple present (default to rest)')
 parser.add_argument('--run', default='1', 
@@ -36,14 +34,15 @@ args = parser.parse_args()
 # Work in a temporary directory since some functions don't allow us
 # to specify output location of working files.
 out_dir = tempfile.TemporaryDirectory()
-print(out_dir.name)
 os.chdir(out_dir.name)
 
+# Find atlas dir
+atlas_dir = os.path.realpath(os.path.join(sys.path[0], '..', 'atlases'))
 
 # Parse BIDS structures
 bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
 bids_xcpd = bids.layout.BIDSLayout(args.xcpd_dir, validate=False)
-bids_atlas = bids.layout.BIDSLayout(args.atlas_dir, validate=False)
+bids_atlas = bids.layout.BIDSLayout(atlas_dir, validate=False)
 
 
 # Find input files
