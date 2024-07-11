@@ -33,49 +33,77 @@ parser.add_argument('--xcpd_dir', required=True)
 parser.add_argument('--space', default='MNI152NLin2009cAsym')
 parser.add_argument('--atlas', required=True)
 parser.add_argument('--atlas_dir', required=True)
+parser.add_argument('--task', default='rest')
+parser.add_argument('--run', default='1')
 parser.add_argument('--min_coverage', type=float, default=0.5)
 parser.add_argument('--out_dir', required=True)
 args = parser.parse_args()
 
 # Parse BIDS structures
-#bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
-#bids_xcpd = bids.layout.BIDSLayout(args.xcpd_dir, validate=False)
-bids_atlas = bids.layout.BIDSLayout(args.atlas_dir, validate=False)
+bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
+bids_xcpd = bids.layout.BIDSLayout(args.xcpd_dir, validate=False)
+bids_atlas = bids.layout.BIDSLayout(args.atlas_dir, validate=False, derivatives=True)
 
 
 # Find input files
-# FIXME filter for atlas fails. invalid_filters='allow' lets the
-# query run but doesn't apply the filter so no result returned.
 atlas_niigz = bids_atlas.get(
-    extension='.nii.gz',
     space=args.space,
+    atlas=args.atlas,
     suffix='dseg',
-    seg=args.atlas,
+    extension='.nii.gz',
     )
-print(atlas_niigz)
+if len(atlas_niigz)!=1:
+    raise Exception(f'Found {len(atlas_niigz)} atlas .nii.gz instead of 1')
+atlas_niigz = atlas_niigz[0]
+
+atlas_tsv = bids_atlas.get(
+    atlas=args.atlas,
+    suffix='dseg',
+    extension='.tsv',
+    )
+if len(atlas_tsv)!=1:
+    raise Exception(f'Found {len(atlas_tsv)} atlas .tsv instead of 1')
+atlas_tsv = atlas_tsv[0]
+
+fmri_niigz = bids_xcpd.get(
+    space=args.space,
+    extension='.nii.gz',
+    desc='denoised',
+    suffix='bold',
+    task=args.task,
+    run=args.run,
+    )
+if len(fmri_niigz)!=1:
+    raise Exception(f'Found {len(fmri_niigz)} fmri .nii.gz instead of 1')
+fmri_niigz = fmri_niigz[0]
+
+mask_niigz = bids_fmriprep.get(
+    space=args.space,
+    extension='.nii.gz',
+    desc='brain',
+    suffix='mask',
+    task=args.task,
+    run=args.run,
+    )
+if len(mask_niigz)!=1:
+    raise Exception(f'Found {len(mask_niigz)} mask .nii.gz instead of 1')
+mask_niigz = mask_niigz[0]
+
+
+print(atlas_niigz.path)
+print(atlas_tsv.path)
+print(fmri_niigz.path)
+print(mask_niigz.path)
+
 
 sys.exit(0)
-
-
-## Parse the info fields from the filenames
-ents_atlas = bids.layout.parse_file_entities(args.atlas_niigz)
-ents_mask = bids.layout.parse_file_entities(args.mask_niigz)
-ents_fmri = bids.layout.parse_file_entities(args.fmri_niigz)
-
-print(ents_atlas)
-print(ents_fmri)
-
-# Verify that spaces match
-if ents_atlas.space != ents_fmri.space:
-    raise Exception('Non-matching space for atlas and fmri')
-if ents_atlas.space != ents_mask.space:
-    raise Exception('Non-matching space for atlas and mask')
+# FIXME Verify we only have 1 of everything and pull objects out of list
 
 
 ## Warp the atlas to the same space as the BOLD file
-transform_files = get_std2bold_xfms(args.fmri_niigz)
+transform_files = get_std2bold_xfms(fmri_niigz)
 
-grab_first_volume = IndexImage(in_file=args.fmri_niigz, index=0)
+grab_first_volume = IndexImage(in_file=fmri_niigz, index=0)
 gfv_results = grab_first_volume.run()
 
 warp_atlases_to_bold_space = ApplyTransforms(
@@ -83,7 +111,7 @@ warp_atlases_to_bold_space = ApplyTransforms(
     input_image_type=3,
     dimension=3,
     reference_image=gfv_results.outputs.out_file,
-    input_image=args.atlas_niigz,
+    input_image=atlas_niigz,
     transforms=transform_files,
 )
 warp_results = warp_atlases_to_bold_space.run()
@@ -92,12 +120,12 @@ warpedatlas_niigz = warp_results.outputs.output_image
 
 ## Parcellate the BOLD file
 # The preprocessed image from XCP_D will be censored already, if censoring is enabled.
-# But the 'exact' number of volumes approach would need to be implemented here if wanted.
+# But the 'exact' volumes approach would need to be implemented here if wanted.
 interface = NiftiParcellate(
-    filtered_file=args.fmri_niigz,
-    mask=args.mask_niigz,
+    filtered_file=fmri_niigz,
+    mask=mask_niigz,
     atlas=warpedatlas_niigz,
-    atlas_labels=args.atlaslabels_tsv,
+    atlas_labels=atlas_tsv,
     min_coverage=args.min_coverage,
 )
 results = interface.run()
@@ -110,7 +138,7 @@ interface2 = TSVConnect(
 results2 = interface2.run()
 correlations_tsv = results2.outputs.correlations
 
-# Set output filenames according to xcpd scheme and put in xcpd location
+# Set output filenames according to xcpd scheme and put in xcpd location. Use bidslayout tools for write
 
 # Example:
 # NNN = sub-SUB_ses-SES_task-TASK_run-RUN_space-MNI152NLin2009cAsym
