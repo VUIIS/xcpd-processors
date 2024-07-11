@@ -5,5 +5,4 @@
     --xcpd_dir ../INPUTS/xcpd/xcpdBIDS \
     --atlas_dir ../atlases \
     --atlas CC20240607 \
-    --min_coverage 0.5 \
-    --out_dir ../OUTPUTS
+    --min_coverage 0.5
