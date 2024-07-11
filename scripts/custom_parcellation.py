@@ -6,6 +6,7 @@
 import argparse
 import bids
 import os
+import sys
 
 from xcp_d.interfaces.ants import ApplyTransforms
 from xcp_d.interfaces.connectivity import NiftiParcellate, TSVConnect
@@ -36,14 +37,22 @@ parser.add_argument('--min_coverage', type=float, default=0.5)
 parser.add_argument('--out_dir', required=True)
 args = parser.parse_args()
 
-# Find files
-bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
-bids_xcpd = bids.layout.BIDSLayout(args.xcpd_dir, validate=False)
+# Parse BIDS structures
+#bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
+#bids_xcpd = bids.layout.BIDSLayout(args.xcpd_dir, validate=False)
 bids_atlas = bids.layout.BIDSLayout(args.atlas_dir, validate=False)
 
-print(bids_fmriprep)
-print(bids_xcpd)
-print(bids_atlas)
+
+# Find input files
+# FIXME filter for atlas fails. invalid_filters='allow' lets the
+# query run but doesn't apply the filter so no result returned.
+atlas_niigz = bids_atlas.get(
+    extension='.nii.gz',
+    space=args.space,
+    suffix='dseg',
+    seg=args.atlas,
+    )
+print(atlas_niigz)
 
 sys.exit(0)
 
