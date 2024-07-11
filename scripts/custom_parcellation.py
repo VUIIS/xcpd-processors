@@ -6,6 +6,7 @@
 import argparse
 import bids
 import os
+import pandas
 import sys
 import tempfile
 
@@ -29,6 +30,8 @@ parser.add_argument('--run', default='1',
     help='Which run to use (default to 1)')
 parser.add_argument('--min_coverage', type=float, default=0.5, 
     help='Should match the param given for the xcpd run')
+parser.add_argument('--out_dir', default='/OUTPUTS', 
+    help='Output directory for stats CSVs')
 args = parser.parse_args()
 
 # Work in a temporary directory since some functions don't allow us
@@ -183,7 +186,24 @@ bids_xcpd.write_to_file(ents, pattern, copy_from=correlations_tsv, validate=Fals
 # Clean up temp files
 out_dir.cleanup()
 
-# FIXME ALFF and REHO?
+# Convert a couple of things to sync-friendly csv
+qc_tsv = bids_xcpd.get(
+    extension='tsv',
+    desc='linc',
+    suffix='qc',
+    task=args.task,
+    run=args.run,
+    )
+if len(qc_tsv)!=1:
+    raise Exception(f'Found {len(qc_tsv)} qc .tsv instead of 1')
+qc = qc_tsv[0].get_df()
+qc.to_csv(os.path.join(args.out_dir, 'qc.csv'), index=False)
+
+cov = pandas.read_csv(coverage_tsv)
+cov.transpose().to_csv(os.path.join(args.out_dir, 'coverage.csv'), index=False, header=False)
+
+
+# FIXME ALFF and REHO? E.g.
 # func/NNN_seg-Glasser_stat-alff_bold.tsv
 # func/NNN_seg-Glasser_stat-reho_bold.tsv
 
