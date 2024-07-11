@@ -14,14 +14,22 @@ from xcp_d.interfaces.nilearn import IndexImage
 from xcp_d.utils.utils import get_std2bold_xfms
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--fmriprep_dir', required=True, help='Location of fmriprep (for brain mask)')
-parser.add_argument('--xcpd_dir', required=True, help='Location of xcpd output (must match subject/session/etc of fmriprep)')
-parser.add_argument('--space', default='MNI152NLin2009cAsym', help='Space to use if multiple (default to MNI152NLin2009cAsym)')
-parser.add_argument('--atlas', required=True, help='Name of atlas to use')
-parser.add_argument('--atlas_dir', required=True, help='Where atlas and label file are found')
-parser.add_argument('--task', default='rest', help='Which task to use if multiple present (default to rest)')
-parser.add_argument('--run', default='1', help='Which run to use (default to 1)')
-parser.add_argument('--min_coverage', type=float, default=0.5, help='Should match the param given for the xcpd run')
+parser.add_argument('--fmriprep_dir', required=True, 
+    help='Location of fmriprep (for brain mask)')
+parser.add_argument('--xcpd_dir', required=True, 
+    help='Location of xcpd output (must match subject/session/etc of fmriprep)')
+parser.add_argument('--space', default='MNI152NLin2009cAsym', 
+    help='Space to use if multiple (default to MNI152NLin2009cAsym)')
+parser.add_argument('--atlas', required=True, 
+    help='Name of atlas to use')
+parser.add_argument('--atlas_dir', required=True, 
+    help='Where atlas and label file are found')
+parser.add_argument('--task', default='rest', 
+    help='Which task to use if multiple present (default to rest)')
+parser.add_argument('--run', default='1', 
+    help='Which run to use (default to 1)')
+parser.add_argument('--min_coverage', type=float, default=0.5, 
+    help='Should match the param given for the xcpd run')
 args = parser.parse_args()
 
 # Parse BIDS structures
