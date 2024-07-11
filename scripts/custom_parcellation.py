@@ -7,6 +7,7 @@ import argparse
 import bids
 import os
 import sys
+import tempfile
 
 from xcp_d.interfaces.ants import ApplyTransforms
 from xcp_d.interfaces.connectivity import NiftiParcellate, TSVConnect
@@ -30,18 +31,18 @@ parser.add_argument('--run', default='1',
     help='Which run to use (default to 1)')
 parser.add_argument('--min_coverage', type=float, default=0.5, 
     help='Should match the param given for the xcpd run')
-parser.add_argument('--work_dir', default='.',
-    help='Working directory (default .)')
 args = parser.parse_args()
 
-# Change to working dir as some commands don't allow specifying where
-# else files might go
-os.chdir(args.work_dir)
+# FIXME Change to temp dir later
+#with tempfile.TemporaryDirectory() as tmpdirname:
+#     print('created temporary directory', tmpdirname)
+os.chdir('../OUTPUTS')
+
 
 # Parse BIDS structures
 bids_fmriprep = bids.layout.BIDSLayout(args.fmriprep_dir, validate=False)
 bids_xcpd = bids.layout.BIDSLayout(args.xcpd_dir, validate=False)
-bids_atlas = bids.layout.BIDSLayout(args.atlas_dir, validate=False, derivatives=True)
+bids_atlas = bids.layout.BIDSLayout(args.atlas_dir, validate=False)
 
 
 # Find input files
@@ -89,11 +90,6 @@ if len(mask_niigz)!=1:
 mask_niigz = mask_niigz[0]
 
 
-print(atlas_niigz.path)
-print(atlas_tsv.path)
-print(fmri_niigz.path)
-print(mask_niigz.path)
-
 
 ## Warp the atlas to the same space as the BOLD file
 transform_files = get_std2bold_xfms(fmri_niigz.path)
@@ -134,6 +130,64 @@ results2 = interface2.run()
 correlations_tsv = results2.outputs.correlations
 
 # FIXME Set output filenames according to xcpd scheme and put in xcpd location. Use bidslayout tools for write
+
+atlas_ents = {
+    'atlas': args.atlas,
+    'space': args.space,
+    'suffix': 'dseg',
+    'extension': '.nii.gz',
+    }
+atlas_pattern = (
+    'atlases/atlas-{atlas}/'
+    'atlas-{atlas}_space-{space}_{suffix}{extension}'
+    )
+atlas_path = bids_xcpd.build_path(atlas_ents, atlas_pattern, validate=False)
+
+base_ents = {
+    'subject': fmri_niigz.get_entities()['subject'],
+    'session': fmri_niigz.get_entities()['session'],
+    'task': args.task,
+    'run': args.run,
+    'space': args.space,
+    'seg': args.atlas,
+    }
+
+cov_ents = base_ents
+cov_ents['stat'] = 'coverage'
+cov_ents['suffix'] = 'bold'
+cov_ents['extension'] = 'tsv'
+cov_pattern = (
+    'sub-{subject}/ses-{session}/func/'
+    'sub-{subject}_ses-{session}_task-{task}_run-{run}_space-{space}_seg-{seg}_stat-{stat}_{suffix}{extension}'
+    )
+cov_path = bids_xcpd.build_path(cov_ents, cov_pattern, validate=False)
+
+ts_ents = base_ents
+ts_ents['stat'] = 'mean'
+ts_ents['suffix'] = 'timeseries'
+ts_ents['extension'] = 'tsv'
+ts_pattern = (
+    'sub-{subject}/ses-{session}/func/'
+    'sub-{subject}_ses-{session}_task-{task}_run-{run}_space-{space}_seg-{seg}_stat-{stat}_{suffix}{extension}'
+    )
+ts_path = bids_xcpd.build_path(ts_ents, ts_pattern, validate=False)
+
+cor_ents = base_ents
+cor_ents['stat'] = 'pearsoncorrelation'
+cor_ents['suffix'] = 'relmat'
+cor_ents['extension'] = 'tsv'
+cor_pattern = (
+    'sub-{subject}/ses-{session}/func/'
+    'sub-{subject}_ses-{session}_task-{task}_run-{run}_space-{space}_seg-{seg}_stat-{stat}_{suffix}{extension}'
+    )
+cor_path = bids_xcpd.build_path(cor_ents, cor_pattern, validate=False)
+
+
+bids_xcpd.write_to_file(atlas_path, copy_from=warpedatlas_niigz)
+bids_xcpd.write_to_file(cov_path, copy_from=coverage_tsv)
+bids_xcpd.write_to_file(ts_path, copy_from=timeseries_tsv)
+bids_xcpd.write_to_file(cor_path, copy_from=correlations_tsv)
+
 
 # Outputs are stored in the working directory
 # correlations.tsv                        Connectivity matrix
