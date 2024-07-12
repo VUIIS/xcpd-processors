@@ -170,6 +170,7 @@ pattern = (
     'sub-{subject}_ses-{session}_task-{task}_run-{run}_space-{space}_seg-{seg}_stat-{stat}_{suffix}{extension}'
     )
 bids_xcpd.write_to_file(ents, pattern, copy_from=coverage_tsv, validate=False)
+final_coverage_tsv = bids_xcpd.build_path(ents, pattern, validate=False)
 
 # Write timeseries tsv
 ents['stat'] = 'mean'
@@ -199,7 +200,7 @@ if len(qc_tsv)!=1:
 qc = qc_tsv[0].get_df()
 qc.to_csv(os.path.join(args.out_dir, 'qc.csv'), index=False)
 
-cov = pandas.read_csv(coverage_tsv)
+cov = pandas.read_csv(final_coverage_tsv)
 cov.transpose().to_csv(os.path.join(args.out_dir, 'coverage.csv'), index=False, header=False)
 
 
