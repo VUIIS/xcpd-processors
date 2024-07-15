@@ -14,3 +14,10 @@ flirt \
 
 # We have 8464 voxels in the maxprob25 thalamus mask
 fslstats -K rthalmask rthalmask -m -v
+
+./make_thalamus_voxels.py
+
+fslmaths \
+    space-MNI152NLin2009cAsym_atlas-MMP_dseg \
+    -add rthalatlas \
+    space-MNI152NLin2009cAsym_atlas-MMPthal_dseg
