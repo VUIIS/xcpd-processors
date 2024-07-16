@@ -83,6 +83,8 @@ mask_niigz = bids_fmriprep.get(
     extension='.nii.gz',
     desc='brain',
     suffix='mask',
+    task=fmri_niigz.get_entities()['task'],
+    run=fmri_niigz.get_entities()['run'],
     )
 if len(mask_niigz)!=1:
     raise Exception(f'Found {len(mask_niigz)} mask .nii.gz instead of 1')
