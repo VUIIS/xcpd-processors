@@ -21,3 +21,32 @@ fslmaths \
     space-MNI152NLin2009cAsym_atlas-MMP_dseg \
     -add rthalatlas \
     space-MNI152NLin2009cAsym_atlas-MMPthal_dseg
+
+
+## Alternative approach to match templateflow 2mm atlas tpl-MNI152NLin2009cAsym_res-02_T1w.nii.gz
+## and thereby match an available fmriprep output
+flirt \
+    -in thalmask \
+    -ref tpl-MNI152NLin2009cAsym_res-02_T1w.nii.gz \
+    -usesqform \
+    -applyxfm \
+    -interp nearestneighbour \
+    -out rthalmask
+
+fslstats -K rthalmask rthalmask -m -v
+
+./make_thalamus_voxels.py
+
+flirt \
+    -in space-MNI152NLin2009cAsym_atlas-MMP_dseg \
+    -ref tpl-MNI152NLin2009cAsym_res-02_T1w.nii.gz \
+    -usesqform \
+    -applyxfm \
+    -interp nearestneighbour \
+    -out space-MNI152NLin2009cAsym_res-02_atlas-MMP_dseg
+
+fslmaths \
+    space-MNI152NLin2009cAsym_res-02_atlas-MMP_dseg \
+    -add rthalatlas \
+    space-MNI152NLin2009cAsym_res-02_atlas-MMPthal_dseg
+
