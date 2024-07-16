@@ -24,10 +24,10 @@ parser.add_argument('--space', default='MNI152NLin2009cAsym',
     help='Space to use if multiple (default to MNI152NLin2009cAsym)')
 parser.add_argument('--atlas', required=True, 
     help='Name of atlas to use')
-parser.add_argument('--task', default='rest', 
-    help='Which task to use if multiple present (default to rest)')
-parser.add_argument('--run', default='1', 
-    help='Which run to use (default to 1)')
+parser.add_argument('--task', 
+    help='Which task to use if multiple present (CURRENTLY IGNORED)')
+parser.add_argument('--run', 
+    help='Which run to use if multiple present (CURRENTLY IGNORED)')
 parser.add_argument('--min_coverage', type=float, default=0.5, 
     help='Should match the param given for the xcpd run')
 parser.add_argument('--out_dir', default='/OUTPUTS', 
@@ -73,8 +73,6 @@ fmri_niigz = bids_xcpd.get(
     extension='.nii.gz',
     desc='denoised',
     suffix='bold',
-    task=args.task,
-    run=args.run,
     )
 if len(fmri_niigz)!=1:
     raise Exception(f'Found {len(fmri_niigz)} fmri .nii.gz instead of 1')
@@ -85,8 +83,6 @@ mask_niigz = bids_fmriprep.get(
     extension='.nii.gz',
     desc='brain',
     suffix='mask',
-    task=args.task,
-    run=args.run,
     )
 if len(mask_niigz)!=1:
     raise Exception(f'Found {len(mask_niigz)} mask .nii.gz instead of 1')
@@ -137,8 +133,8 @@ correlations_tsv = results2.outputs.correlations
 ents = {
     'subject': fmri_niigz.get_entities()['subject'],
     'session': fmri_niigz.get_entities()['session'],
-    'task': args.task,
-    'run': args.run,
+    'task': fmri_niigz.get_entities()['task'],
+    'run': fmri_niigz.get_entities()['run'],
     'space': args.space,
     'seg': args.atlas,
     }
@@ -192,8 +188,6 @@ qc_tsv = bids_xcpd.get(
     extension='tsv',
     desc='linc',
     suffix='qc',
-    task=args.task,
-    run=args.run,
     )
 if len(qc_tsv)!=1:
     raise Exception(f'Found {len(qc_tsv)} qc .tsv instead of 1')
