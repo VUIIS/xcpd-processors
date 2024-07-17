@@ -196,7 +196,7 @@ if len(qc_tsv)!=1:
 qc = qc_tsv[0].get_df()
 qc.to_csv(os.path.join(args.out_dir, 'qc.csv'), index=False)
 
-cov = pandas.read_csv(final_coverage_tsv)
+cov = pandas.read_csv(final_coverage_tsv, sep='\t')
 cov.transpose().to_csv(os.path.join(args.out_dir, 'coverage.csv'), index=False, header=False)
 
 
