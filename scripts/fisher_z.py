@@ -44,7 +44,10 @@ corr_tsvs_all = bids_xcpd.get(
 # https://github.com/PennLINC/xcp_d/blob/main/xcp_d/data/xcp_d_bids_config.json
 # But I don't know how to use that. So just manually reduce to list to only 
 # pearsoncorrelation here
-corr_tsvs = [x for x in corr_tsvs_all if x.endswith('stat-pearsoncorrelation_relmat.tsv')]
+corr_tsvs = [
+        x for x in corr_tsvs_all if 
+        x.filename.endswith('stat-pearsoncorrelation_relmat.tsv')
+    ]
 
 # Process them
 for corr_tsv in corr_tsvs:
