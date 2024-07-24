@@ -35,7 +35,9 @@ inputs:
 
 outputs:
   - {path: HTML, type: DIR, resource: HTML}
-  - {path: BIDS, type: DIR, resource: xcpdBIDS}
+  - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
+  - {path: qc.csv, type: FILE, resource: QC}
+  - {path: coverage.csv, type: FILE, resource: COVERAGE}
 
 command:
   type: singularity_run
@@ -44,16 +46,17 @@ command:
     --work-dir /tmp
     --fs-license-file /opt/license.txt
     --skip-dcan-qc
-    --dummy-scans auto
     --smoothing 0
+    --dummy-scans auto
+    --skip-parcellation
     --nuisance-regressors acompcor
     --fd-thresh 0
+    --min-time 300
     --lower-bpf 0.01
     --upper-bpf 0.10
     --min-coverage 0.5
-    --skip-parcellation
     /INPUTS/fmriprepBIDS/fmriprepBIDS
-    /OUTPUTS/BIDS
+    /OUTPUTS/xcpdBIDS
     participant
   extraopts: --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
 
@@ -62,8 +65,22 @@ post:
   container: xcpd
   args: >-
     bash -c '
+    
     mkdir /OUTPUTS/HTML &&
-    cp /OUTPUTS/BIDS/sub-*.html /OUTPUTS/HTML &&
-    cp -R /OUTPUTS/BIDS/sub-* /OUTPUTS/HTML &&
-    rm -fr /OUTPUTS/HTML/sub-*/ses-*
+    cp /OUTPUTS/xcpdBIDS/sub-*.html /OUTPUTS/HTML &&
+    cp -R /OUTPUTS/xcpdBIDS/sub-* /OUTPUTS/HTML &&
+    rm -fr /OUTPUTS/HTML/sub-*/ses-* &&
+    
+    cd /INPUTS &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v1.6.1.tar.gz &&
+    tar -zxf xcpd-processors.tar.gz &&
+    export PATH=/INPUTS/xcpd-processors-1.6.1/scripts:\$PATH &&
+    custom_parcellation.py
+      --fmriprep_dir /INPUTS/fmriprepBIDS/fmriprepBIDS
+      --xcpd_dir /OUTPUTS/xcpdBIDS
+      --atlas CC20240716
+      --min_coverage 0.5
+      --out_dir /OUTPUTS &&
+    
+    fisher_z.py --xcpd_dir /OUTPUTS/xcpdBIDS
     '

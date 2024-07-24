@@ -70,9 +70,9 @@ post:
     rm -fr /OUTPUTS/HTML/sub-*/ses-* &&
     
     cd /INPUTS &&
-    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v1.5.1.tar.gz &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v1.6.1.tar.gz &&
     tar -zxf xcpd-processors.tar.gz &&
-    export PATH=/INPUTS/xcpd-processors-1.5.1/scripts:\$PATH &&
+    export PATH=/INPUTS/xcpd-processors-1.6.1/scripts:\$PATH &&
     custom_parcellation.py
       --fmriprep_dir /INPUTS/fmriprepBIDS/fmriprepBIDS
       --xcpd_dir /OUTPUTS/xcpdBIDS
