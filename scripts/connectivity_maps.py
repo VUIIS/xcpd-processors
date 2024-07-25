@@ -15,6 +15,7 @@
 import argparse
 import bids
 import os
+import nibabel
 import pandas
 import sys
 import tempfile
@@ -93,9 +94,13 @@ pattern = (
 fmri_tsv = bids_xcpd.build_path(ents, pattern, validate=False)
 
 # Compute the connectivity maps
+# FIXME review https://nipy.org/nitime/examples/seed_analysis.html
 timeseries = pandas.read_csv(fmri_tsv, sep='\t')
-for roi in timeseries.columns:
-    print(roi)
+fmri_img = nibabel.load(fmri_niigz.path)
+fmri_data = fmri_img.get_fdata()
+print(fmri_data)
+#for roi in timeseries.columns:
+#    print(roi)
 
 
 sys.exit(0)
