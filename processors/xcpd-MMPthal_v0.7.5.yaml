@@ -29,7 +29,7 @@ inputs:
     assessors:
         
         - name: assr_fmriprep
-          proctypes: test-224654-a2mm_v23
+          proctypes: fmriprep_v23
           resources:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
