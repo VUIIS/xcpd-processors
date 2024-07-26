@@ -16,6 +16,9 @@ import argparse
 import bids
 import os
 import nibabel
+import nitime
+import nitime.fmri
+import nitime.analysis
 import pandas
 import sys
 import tempfile
@@ -75,6 +78,7 @@ fmri_niigz = bids_xcpd.get(
 if len(fmri_niigz)!=1:
     raise Exception(f'Found {len(fmri_niigz)} fmri .nii.gz instead of 1')
 fmri_niigz = fmri_niigz[0]
+fmri_img = nibabel.load(fmri_niigz.path)
 
 ents = {
     'subject': fmri_niigz.get_entities()['subject'],
@@ -93,14 +97,25 @@ pattern = (
     )
 fmri_tsv = bids_xcpd.build_path(ents, pattern, validate=False)
 
-# Compute the connectivity maps
-# FIXME review https://nipy.org/nitime/examples/seed_analysis.html
-timeseries = pandas.read_csv(fmri_tsv, sep='\t')
-fmri_img = nibabel.load(fmri_niigz.path)
-fmri_data = fmri_img.get_fdata()
-print(fmri_data)
-#for roi in timeseries.columns:
-#    print(roi)
+
+
+# Load extracted ROI timeseries from TSV, convert to nitime format
+# https://nipy.org/nitime/examples/seed_analysis.html
+roi_timeseries = nitime.timeseries.TimeSeries(
+    pandas.read_csv(fmri_tsv, sep='\t').transpose(), 
+    sampling_interval=fmri_img.header['pixdim'][4],
+    )
+
+# Load preprocessed fmri in nitime format
+fmri_timeseries = nitime.fmri.io.time_series_from_file(
+    fmri_niigz.path, 
+    TR=fmri_img.header['pixdim'][4],
+    )
+
+# Compute correlations
+corrmaps = nitime.analysis.SeedCorrelationAnalyzer(roi_timeseries, fmri_timeseries)
+
+print(corrmaps)
 
 
 sys.exit(0)
