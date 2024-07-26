@@ -3,14 +3,8 @@
 # Connectivity maps for ROIs in XCP_D output
 #
 # We need these to be in a specified space/resolution so they 
-# match across subjects/sessions. We could enforce the grid of
-# the atlas, but that means resampling the preprocessed fmri -
-# can we modify xcpd get_bold2std_and_t1w_xfms for that? See
-# for usage
-# https://github.com/PennLINC/xcp_d/blob/30c7e01366d925b352573bcb207ad84d7c7dae74/xcp_d/workflows/plotting.py#L172
-#
-# Or, we could rely on fmriprep having been run with a specified
-# resolution grid.
+# match across subjects/sessions. We will resample computed 
+# connmaps to the grid of the chosen atlas.
 
 import argparse
 import bids
@@ -22,6 +16,7 @@ import numpy
 import os
 import pandas
 import re
+import shutil
 import sys
 import tempfile
 from xcp_d.interfaces.ants import ApplyTransforms
@@ -34,13 +29,8 @@ parser.add_argument('--space', default='MNI152NLin2009cAsym',
 parser.add_argument('--atlas', required=True, 
     help='Name of atlas to use')
 parser.add_argument('--seeds', required=False, nargs='*',
-    help='List of seed region names (space separated)')
+    help='List of seed region names, space separated. All if not specified')
 args = parser.parse_args()
-
-# Work in a temporary directory since some functions don't allow us
-# to specify output location of working files.
-#out_dir = tempfile.TemporaryDirectory()
-#os.chdir(out_dir.name)
 
 # Find atlas dir
 atlas_dir = os.path.realpath(os.path.join(sys.path[0], '..', 'atlases'))
@@ -151,6 +141,7 @@ pattern = (
     )
 
 # Compute and save for each ROI
+# Ref for indexing: https://stackoverflow.com/questions/19821425/how-to-filter-numpy-array-by-list-of-indices
 for r in range(nroi):
     roi_name = roi_data.columns[r]
     if args.seeds and not roi_name in args.seeds:
@@ -162,29 +153,24 @@ for r in range(nroi):
     analyzer = nitime.analysis.SeedCorrelationAnalyzer(roi_timeseries, fmri_timeseries)
     q = analyzer.corrcoef
     connmap_data = numpy.empty(volume_shape)
-    # FIXME connmap_data[-1][coords_indices] has the wrong shape (3, 902629, 91)
-    # for single ROI. Should be 91, 109, 91 or maybe 902629, ?
-    connmap_data[-1][coords_indices] = analyzer.corrcoef
-
-    ents['suffix'] = sanitize_seedname(roi_name)
-    connmap_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
+    connmap_data[tuple(coords_indices)] = analyzer.corrcoef
+    connmap_data[numpy.isnan(connmap_data)] = 0
 
     connmap_img = nibabel.Nifti1Image(connmap_data, fmri_img.affine)
-    nibabel.save(connmap_img, connmap_niigz)
-
-sys.exit(0)
-
-
-## Resample the connectivity maps to the same grid as the atlas
-warp_fmri_to_atlas_space = ApplyTransforms(
-    interpolation="Linear",
-    input_image_type=3,
-    dimension=3,
-    reference_image=atlas_niigz.path,
-    input_image=fmri_niigz.path,
-    transforms='identity',
-)
-warp_results = warp_fmri_to_atlas_space.run()
-warpedfmri_niigz = warp_results.outputs.output_image
-print(warpedfmri_niigz)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        nibabel.save(connmap_img, os.path.join(tmp_dir, 'connmap.nii.gz'))
+        warp_fmri_to_atlas_space = ApplyTransforms(
+            interpolation="Linear",
+            input_image_type=3,
+            dimension=3,
+            reference_image=atlas_niigz.path,
+            input_image=os.path.join(tmp_dir, 'connmap.nii.gz'),
+            output_image=os.path.join(tmp_dir, 'rconnmap.nii.gz'),
+            transforms='identity',
+            )
+        warp_results = warp_fmri_to_atlas_space.run()
+        warpedfmri_niigz = warp_results.outputs.output_image
+        ents['suffix'] = sanitize_seedname(roi_name)
+        connmap_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
+        shutil.copyfile(warpedfmri_niigz, connmap_niigz)
 
