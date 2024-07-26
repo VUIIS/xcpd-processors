@@ -19,7 +19,9 @@ import nibabel
 import nitime
 import nitime.fmri
 import nitime.analysis
+import numpy
 import pandas
+import re
 import sys
 import tempfile
 from xcp_d.interfaces.ants import ApplyTransforms
@@ -101,10 +103,12 @@ fmri_tsv = bids_xcpd.build_path(ents, pattern, validate=False)
 
 # Load extracted ROI timeseries from TSV, convert to nitime format
 # https://nipy.org/nitime/examples/seed_analysis.html
+roi_data = pandas.read_csv(fmri_tsv, sep='\t')
 roi_timeseries = nitime.timeseries.TimeSeries(
-    pandas.read_csv(fmri_tsv, sep='\t').transpose(), 
+    roi_data.transpose(), 
     sampling_interval=fmri_img.header['pixdim'][4],
     )
+nroi = roi_timeseries.shape[0]
 
 # Load preprocessed fmri in nitime format
 fmri_timeseries = nitime.fmri.io.time_series_from_file(
@@ -113,12 +117,49 @@ fmri_timeseries = nitime.fmri.io.time_series_from_file(
     )
 
 # Compute correlations
-corrmaps = nitime.analysis.SeedCorrelationAnalyzer(roi_timeseries, fmri_timeseries)
+analyzer = nitime.analysis.SeedCorrelationAnalyzer(roi_timeseries, fmri_timeseries)
 
-print(corrmaps)
+# We need the voxel coords to stow correlations in the right place
+fmri_shape = fmri_img.shape[:-1]
+voxcoords = list(numpy.ndindex(fmri_shape))
+voxcoords = numpy.array(voxcoords).T
 
+# Filename for seed conn map
+# Alphanum only. Cannot start with digit
+def sanitize_seedname(seedname):
+    seedname = re.sub('^([0-9])', 'x\g<1>', seedname)
+    seedname = re.sub('[^0-9A-Za-z]', '', seedname)
+    return seedname
+    
+ents = {
+    'subject': fmri_niigz.get_entities()['subject'],
+    'session': fmri_niigz.get_entities()['session'],
+    'task': fmri_niigz.get_entities()['task'],
+    'run': fmri_niigz.get_entities()['run'],
+    'space': args.space,
+    'seg': args.atlas,
+    'stat': 'R',
+    'suffix': sanitize_seedname('test_seed'),
+    'extension': 'nii.gz',
+    }
+pattern = (
+    'sub-{subject}/ses-{session}/func/'
+    'sub-{subject}_ses-{session}_task-{task}_run-{run}_space-{space}_seg-{seg}_stat-{stat}_{suffix}{extension}'
+    )
+connmap_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
+print(connmap_niigz)
 
 sys.exit(0)
+
+
+# Compute and save for each ROI
+for r in range(nroi):
+    outvol = numpy.empty(fmri_shape)
+    outvol[-1][voxcoords] = analyzer.corrcoef[r]
+
+    roi_data.columns[r]
+
+
 
 ## Resample the connectivity maps to the same grid as the atlas
 warp_fmri_to_atlas_space = ApplyTransforms(
