@@ -14,18 +14,17 @@
 
 import argparse
 import bids
-import os
 import nibabel
 import nitime
 import nitime.fmri
 import nitime.analysis
 import numpy
+import os
 import pandas
 import re
 import sys
 import tempfile
 from xcp_d.interfaces.ants import ApplyTransforms
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--xcpd_dir', required=True, 
@@ -34,6 +33,8 @@ parser.add_argument('--space', default='MNI152NLin2009cAsym',
     help='Space to use if multiple (default to MNI152NLin2009cAsym)')
 parser.add_argument('--atlas', required=True, 
     help='Name of atlas to use')
+parser.add_argument('--seeds', required=False, nargs='*',
+    help='List of seed region names (space separated)')
 args = parser.parse_args()
 
 # Work in a temporary directory since some functions don't allow us
@@ -81,6 +82,7 @@ if len(fmri_niigz)!=1:
     raise Exception(f'Found {len(fmri_niigz)} fmri .nii.gz instead of 1')
 fmri_niigz = fmri_niigz[0]
 fmri_img = nibabel.load(fmri_niigz.path)
+fmri_tr = fmri_img.header['pixdim'][4]
 
 ents = {
     'subject': fmri_niigz.get_entities()['subject'],
@@ -101,36 +103,38 @@ fmri_tsv = bids_xcpd.build_path(ents, pattern, validate=False)
 
 
 
-# Load extracted ROI timeseries from TSV, convert to nitime format
-# https://nipy.org/nitime/examples/seed_analysis.html
+## https://nipy.org/nitime/examples/seed_analysis.html
+
+
+# We need voxel coords to stow correlations in the right place
+volume_shape = fmri_img.shape[:-1]
+coords = list(numpy.ndindex(volume_shape))
+coords_target = numpy.array(coords).T
+coords_indices = list(coords_target)
+
+# Load ROI time series from tsv
 roi_data = pandas.read_csv(fmri_tsv, sep='\t')
-roi_timeseries = nitime.timeseries.TimeSeries(
-    roi_data.transpose(), 
-    sampling_interval=fmri_img.header['pixdim'][4],
-    )
-nroi = roi_timeseries.shape[0]
+nroi = roi_data.shape[1]
 
 # Load preprocessed fmri in nitime format
 fmri_timeseries = nitime.fmri.io.time_series_from_file(
-    fmri_niigz.path, 
-    TR=fmri_img.header['pixdim'][4],
+    fmri_niigz.path,
+    coords_target,
+    TR=fmri_tr,
     )
 
+
 # Compute correlations
-analyzer = nitime.analysis.SeedCorrelationAnalyzer(roi_timeseries, fmri_timeseries)
 
-# We need the voxel coords to stow correlations in the right place
-fmri_shape = fmri_img.shape[:-1]
-voxcoords = list(numpy.ndindex(fmri_shape))
-voxcoords = numpy.array(voxcoords).T
-
-# Filename for seed conn map
-# Alphanum only. Cannot start with digit
+# Region label for filename alphanum only. Cannot start with digit
 def sanitize_seedname(seedname):
-    seedname = re.sub('^([0-9])', 'x\g<1>', seedname)
-    seedname = re.sub('[^0-9A-Za-z]', '', seedname)
-    return seedname
+    newname = re.sub('^([0-9])', 'x\g<1>', seedname)
+    newname = re.sub('[^0-9A-Za-z]', '', newname)
+    if newname!=seedname:
+        print(f'Renaming seed {seedname} to {newname} for connmap nii.gz')
+    return newname
     
+# Base filename info
 ents = {
     'subject': fmri_niigz.get_entities()['subject'],
     'session': fmri_niigz.get_entities()['session'],
@@ -139,26 +143,36 @@ ents = {
     'space': args.space,
     'seg': args.atlas,
     'stat': 'R',
-    'suffix': sanitize_seedname('test_seed'),
     'extension': 'nii.gz',
     }
 pattern = (
     'sub-{subject}/ses-{session}/func/'
     'sub-{subject}_ses-{session}_task-{task}_run-{run}_space-{space}_seg-{seg}_stat-{stat}_{suffix}{extension}'
     )
-connmap_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
-print(connmap_niigz)
-
-sys.exit(0)
-
 
 # Compute and save for each ROI
 for r in range(nroi):
-    outvol = numpy.empty(fmri_shape)
-    outvol[-1][voxcoords] = analyzer.corrcoef[r]
+    roi_name = roi_data.columns[r]
+    if args.seeds and not roi_name in args.seeds:
+        continue
+    roi_timeseries = nitime.timeseries.TimeSeries(
+        roi_data[roi_name].transpose(), 
+        sampling_interval=fmri_tr,
+        )
+    analyzer = nitime.analysis.SeedCorrelationAnalyzer(roi_timeseries, fmri_timeseries)
+    q = analyzer.corrcoef
+    connmap_data = numpy.empty(volume_shape)
+    # FIXME connmap_data[-1][coords_indices] has the wrong shape (3, 902629, 91)
+    # for single ROI. Should be 91, 109, 91 or maybe 902629, ?
+    connmap_data[-1][coords_indices] = analyzer.corrcoef
 
-    roi_data.columns[r]
+    ents['suffix'] = sanitize_seedname(roi_name)
+    connmap_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
 
+    connmap_img = nibabel.Nifti1Image(connmap_data, fmri_img.affine)
+    nibabel.save(connmap_img, connmap_niigz)
+
+sys.exit(0)
 
 
 ## Resample the connectivity maps to the same grid as the atlas
