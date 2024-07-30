@@ -9,6 +9,7 @@
 import argparse
 import bids
 import nibabel
+import nibabel.processing
 import nitime
 import nitime.fmri
 import nitime.analysis
@@ -34,6 +35,8 @@ parser.add_argument('--saveR', action='store_true',
     help='Save R maps')
 parser.add_argument('--saveZ', action='store_true',
     help='Save Z maps')
+parser.add_argument('--fwhm', default=0, nargs='*', type=int, 
+    help='List of smoothing kernels, space separated. Default 0 (no smoothing)')
 args = parser.parse_args()
 
 if not args.saveR and not args.saveZ:
@@ -164,43 +167,54 @@ for r in range(nroi):
     connmapR[numpy.isnan(connmapR)] = 0
 
     if args.saveR:
-        connmapR_img = nibabel.Nifti1Image(connmapR, fmri_img.affine)
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            nibabel.save(connmapR_img, os.path.join(tmp_dir, 'connmapR.nii.gz'))
-            warp_fmri_to_atlas_space = ApplyTransforms(
-                interpolation="Linear",
-                input_image_type=3,
-                dimension=3,
-                reference_image=atlas_niigz.path,
-                input_image=os.path.join(tmp_dir, 'connmapR.nii.gz'),
-                output_image=os.path.join(tmp_dir, 'rconnmapR.nii.gz'),
-                transforms='identity',
-                )
-            warp_results = warp_fmri_to_atlas_space.run()
-            warpedfmri_niigz = warp_results.outputs.output_image
-            ents['stat'] = 'R'
-            ents['suffix'] = sanitize_seedname(roi_name)
-            connmapR_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
-            shutil.copyfile(warpedfmri_niigz, connmapR_niigz)
+        for kern in args.fwhm:
+            connmapR_img = nibabel.Nifti1Image(connmapR, fmri_img.affine)
+            if kern>0:
+                connmapR_img = nibabel.processing.smooth_image(connmapR_img, kern)
+                ents['stat'] = f'Rs{kern}'
+            else:
+                ents['stat'] = 'R'
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                nibabel.save(connmapR_img, os.path.join(tmp_dir, 'connmapR.nii.gz'))
+                warp_fmri_to_atlas_space = ApplyTransforms(
+                    interpolation="Linear",
+                    input_image_type=3,
+                    dimension=3,
+                    reference_image=atlas_niigz.path,
+                    input_image=os.path.join(tmp_dir, 'connmapR.nii.gz'),
+                    output_image=os.path.join(tmp_dir, 'rconnmapR.nii.gz'),
+                    transforms='identity',
+                    )
+                warp_results = warp_fmri_to_atlas_space.run()
+                warpedfmri_niigz = warp_results.outputs.output_image
+                ents['suffix'] = sanitize_seedname(roi_name)
+                connmapR_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
+                shutil.copyfile(warpedfmri_niigz, connmapR_niigz)
 
     if args.saveZ:
         ntimepoints = roi_timeseries.shape[-1]
         connmapZ = numpy.arctanh(connmapR) * numpy.sqrt(ntimepoints - 3)
-        connmapZ_img = nibabel.Nifti1Image(connmapZ, fmri_img.affine)
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            nibabel.save(connmapZ_img, os.path.join(tmp_dir, 'connmapZ.nii.gz'))
-            warp_fmri_to_atlas_space = ApplyTransforms(
-                interpolation="Linear",
-                input_image_type=3,
-                dimension=3,
-                reference_image=atlas_niigz.path,
-                input_image=os.path.join(tmp_dir, 'connmapZ.nii.gz'),
-                output_image=os.path.join(tmp_dir, 'rconnmapZ.nii.gz'),
-                transforms='identity',
-                )
-            warp_results = warp_fmri_to_atlas_space.run()
-            warpedfmri_niigz = warp_results.outputs.output_image
-            ents['stat'] = 'Z'
-            ents['suffix'] = sanitize_seedname(roi_name)
-            connmapZ_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
-            shutil.copyfile(warpedfmri_niigz, connmapZ_niigz)
+        
+        for kern in args.fwhm:
+            connmapZ_img = nibabel.Nifti1Image(connmapZ, fmri_img.affine)
+            if kern>0:
+                connmapZ_img = nibabel.processing.smooth_image(connmapZ_img, kern)
+                ents['stat'] = f'Zs{kern}'
+            else:
+                ents['stat'] = 'Z'
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                nibabel.save(connmapZ_img, os.path.join(tmp_dir, 'connmapZ.nii.gz'))
+                warp_fmri_to_atlas_space = ApplyTransforms(
+                    interpolation="Linear",
+                    input_image_type=3,
+                    dimension=3,
+                    reference_image=atlas_niigz.path,
+                    input_image=os.path.join(tmp_dir, 'connmapZ.nii.gz'),
+                    output_image=os.path.join(tmp_dir, 'rconnmapZ.nii.gz'),
+                    transforms='identity',
+                    )
+                warp_results = warp_fmri_to_atlas_space.run()
+                warpedfmri_niigz = warp_results.outputs.output_image
+                ents['suffix'] = sanitize_seedname(roi_name)
+                connmapZ_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
+                shutil.copyfile(warpedfmri_niigz, connmapZ_niigz)
