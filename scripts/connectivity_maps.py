@@ -30,7 +30,15 @@ parser.add_argument('--atlas', required=True,
     help='Name of atlas to use')
 parser.add_argument('--seeds', required=False, nargs='*',
     help='List of seed region names, space separated. All if not specified')
+parser.add_argument('--saveR', action='store_true',
+    help='Save R maps')
+parser.add_argument('--saveZ', action='store_true',
+    help='Save Z maps')
 args = parser.parse_args()
+
+if not args.saveR and not args.saveZ:
+    raise exception('No maps specified. Use --saveR or --saveZ')
+
 
 # Find atlas dir
 atlas_dir = os.path.realpath(os.path.join(sys.path[0], '..', 'atlases'))
@@ -132,7 +140,6 @@ ents = {
     'run': fmri_niigz.get_entities()['run'],
     'space': args.space,
     'seg': args.atlas,
-    'stat': 'R',
     'extension': 'nii.gz',
     }
 pattern = (
@@ -152,25 +159,48 @@ for r in range(nroi):
         )
     analyzer = nitime.analysis.SeedCorrelationAnalyzer(roi_timeseries, fmri_timeseries)
     q = analyzer.corrcoef
-    connmap_data = numpy.empty(volume_shape)
-    connmap_data[tuple(coords_indices)] = analyzer.corrcoef
-    connmap_data[numpy.isnan(connmap_data)] = 0
+    connmapR = numpy.empty(volume_shape)
+    connmapR[tuple(coords_indices)] = analyzer.corrcoef
+    connmapR[numpy.isnan(connmapR)] = 0
 
-    connmap_img = nibabel.Nifti1Image(connmap_data, fmri_img.affine)
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        nibabel.save(connmap_img, os.path.join(tmp_dir, 'connmap.nii.gz'))
-        warp_fmri_to_atlas_space = ApplyTransforms(
-            interpolation="Linear",
-            input_image_type=3,
-            dimension=3,
-            reference_image=atlas_niigz.path,
-            input_image=os.path.join(tmp_dir, 'connmap.nii.gz'),
-            output_image=os.path.join(tmp_dir, 'rconnmap.nii.gz'),
-            transforms='identity',
-            )
-        warp_results = warp_fmri_to_atlas_space.run()
-        warpedfmri_niigz = warp_results.outputs.output_image
-        ents['suffix'] = sanitize_seedname(roi_name)
-        connmap_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
-        shutil.copyfile(warpedfmri_niigz, connmap_niigz)
+    if args.saveR:
+        connmapR_img = nibabel.Nifti1Image(connmapR, fmri_img.affine)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            nibabel.save(connmapR_img, os.path.join(tmp_dir, 'connmapR.nii.gz'))
+            warp_fmri_to_atlas_space = ApplyTransforms(
+                interpolation="Linear",
+                input_image_type=3,
+                dimension=3,
+                reference_image=atlas_niigz.path,
+                input_image=os.path.join(tmp_dir, 'connmapR.nii.gz'),
+                output_image=os.path.join(tmp_dir, 'rconnmapR.nii.gz'),
+                transforms='identity',
+                )
+            warp_results = warp_fmri_to_atlas_space.run()
+            warpedfmri_niigz = warp_results.outputs.output_image
+            ents['stat'] = 'R'
+            ents['suffix'] = sanitize_seedname(roi_name)
+            connmapR_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
+            shutil.copyfile(warpedfmri_niigz, connmapR_niigz)
 
+    if args.saveZ:
+        ntimepoints = roi_timeseries.shape[-1]
+        connmapZ = numpy.arctanh(connmapR) * numpy.sqrt(ntimepoints - 3)
+        connmapZ_img = nibabel.Nifti1Image(connmapZ, fmri_img.affine)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            nibabel.save(connmapZ_img, os.path.join(tmp_dir, 'connmapZ.nii.gz'))
+            warp_fmri_to_atlas_space = ApplyTransforms(
+                interpolation="Linear",
+                input_image_type=3,
+                dimension=3,
+                reference_image=atlas_niigz.path,
+                input_image=os.path.join(tmp_dir, 'connmapZ.nii.gz'),
+                output_image=os.path.join(tmp_dir, 'rconnmapZ.nii.gz'),
+                transforms='identity',
+                )
+            warp_results = warp_fmri_to_atlas_space.run()
+            warpedfmri_niigz = warp_results.outputs.output_image
+            ents['stat'] = 'Z'
+            ents['suffix'] = sanitize_seedname(roi_name)
+            connmapZ_niigz = bids_xcpd.build_path(ents, pattern, validate=False)
+            shutil.copyfile(warpedfmri_niigz, connmapZ_niigz)
