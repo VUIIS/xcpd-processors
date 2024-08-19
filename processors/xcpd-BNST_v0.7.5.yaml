@@ -85,6 +85,7 @@ post:
       --xcpd_dir /OUTPUTS/xcpdBIDS
       --space MNI152NLin6Asym
       --atlas BNST
+      --saveR
       --saveZ
-      --fwhm 0 6
+      --fwhm 0 4
     '
