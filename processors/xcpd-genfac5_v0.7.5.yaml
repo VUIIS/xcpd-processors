@@ -73,7 +73,11 @@ post:
     tar -zxf xcpd-processors.tar.gz &&
     export PATH=/INPUTS/xcpd-processors-2.3.0/scripts:\$PATH &&
 
+    stats_csvs.py --xcpd_dir /OUTPUTS/xcpdBIDS --out_dir /OUTPUTS --atlas Tian &&
+    stats_csvs.py --xcpd_dir /OUTPUTS/xcpdBIDS --out_dir /OUTPUTS --atlas Glasser &&
     stats_csvs.py --xcpd_dir /OUTPUTS/xcpdBIDS --out_dir /OUTPUTS --atlas Gordon &&
+    stats_csvs.py --xcpd_dir /OUTPUTS/xcpdBIDS --out_dir /OUTPUTS --atlas 4S256Parcels &&
+    stats_csvs.py --xcpd_dir /OUTPUTS/xcpdBIDS --out_dir /OUTPUTS --atlas 4S456Parcels &&
 
     fisher_z.py --xcpd_dir /OUTPUTS/xcpdBIDS
     '
