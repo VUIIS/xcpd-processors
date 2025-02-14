@@ -44,7 +44,7 @@ cov = pandas.read_csv(cov_tsv_fname, sep='\t')
 covdir = os.path.join(args.out_dir, 'COVERAGE')
 os.makedirs(covdir, exist_ok=True)
 cov.transpose().to_csv(
-    os.path.join(covdir, 'coverage-{args.atlas}.csv'), 
+    os.path.join(covdir, f'coverage-{args.atlas}.csv'), 
     index=False, 
     header=False
     )
