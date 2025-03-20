@@ -37,7 +37,7 @@ outputs:
   - {path: HTML, type: DIR, resource: HTML}
   - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
   - {path: qc.csv, type: FILE, resource: QC}
-  - {path: coverage.csv, type: FILE, resource: COVERAGE}
+  - {path: COVERAGE, type: DIR, resource: COVERAGE}
 
 command:
   type: singularity_run
