@@ -1,0 +1,105 @@
+label,roi_name,source,Other information
+1,left_posterior_insula,Farb et al. 2013,"Insula subregions were generated using the 16 cytoarchitecturally-defined ROIs in Farb et al. 2013.  Posterior, mid, and anterior ROIs included the 2 most posterior, 3 middle, and 3 most anterior regions per hemisphere, respectively. Overlapping voxels between middle and anterior, posterior regions were assigned to respective anterior and posterior regions."
+2,right_posterior_insula,Farb et al. 2013,
+3,left_mid_insula,Farb et al. 2013,
+4,right_mid_insula,Farb et al. 2013,
+5,right_anterior_insula,Farb et al. 2013,
+6,left_anterior_insula,Farb et al. 2013,
+7,left_amygdala,"Thresholded Juelich Atlas BLA, CMe, and Superficial amygdala masks at 50%, then thresholded the Harvard Oxford Subcortical Atlas Amygdala mask at 50%, added all of these together to make a composite amygdala ROI",Juelich-maxprob-thr50-2mm.nii.gz and HarvardOxford-cort-maxprob-thr50-2mm.nii.gz
+8,right_amygdala,,
+9,left_aTPJ,Mars et al. 2013 (FSL) - Mars TPJ Connectivity-based parcellation thresholded at 50%,
+10,right_aTPJ,Mars et al. 2013 (FSL) - Mars TPJ Connectivity-based parcellation thresholded at 50%,
+11,left_pTPJ,Mars et al. 2013 (FSL) - Mars TPJ Connectivity-based parcellation thresholded at 50%,
+12,right_pTPJ,Mars et al. 2013 (FSL) - Mars TPJ Connectivity-based parcellation thresholded at 50%,
+13,left_IFG_tri,Harvard-Oxford cortical atlas (FSL) thresholded at 50%,
+14,right_IFG_tri,Harvard-Oxford cortical atlas (FSL) thresholded at 50%,
+15,left_IFG_oper,Harvard-Oxford cortical atlas (FSL) thresholded at 50%,
+16,right_IFG_oper,Harvard-Oxford cortical atlas (FSL) thresholded at 50%,
+17,left_M1_trunk,"4mm spheres around coordinates from Roux et al. 2018, 2020","Primary somatosensory regions were generated from mean MNI coordinates for body-part specific responses, determined via electrostimulation by Roux et al. 2018. Primary motor regions were generated via the same procedures completed in Roux et al. 2020 (Note. Mean coordinates were taken directly from tables in most cases; however, for Table 3 in Roux et al. (2020), mean coordinates were computed from the listed coordinates for each distinct body part, rather than the broader body part groupings provided, e.g. computed for “thumb” rather than the listed mean coordinate for “all fingers”). 4mm spheres were generated around the averaged coordinate for each specific body part listed in each paper. The corresponding spherical regions were joined to form the following categorial groupings:
+-Upper face: forehead, eyes, eyebrows, nose, cheek
+-Lower face: lips, jaw
+-Mouth: tongue, teeth, larynx, pharynx 
+*Note, overlapping voxels between lower face and mouth were assigned to lower face."
+18,right_m1_trunk,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+19,left_m1_arm,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+20,right_M1_arm,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+21,left_S1_trunk,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+22,right_S1_trunk,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+23,left_S1_arm,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+24,right_S1_arm,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+25,left_M1_upper_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+26,right_M1_upper_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+27,left_M1_lower_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+28,left_M1_mouth,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+29,right_M1_lower_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+30,right_M1_mouth,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+31,left_S1_upper_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+32,right_S1_upper_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+33,left_S1_lower_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+34,right_S1_lower_face,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+35,left_S1_mouth,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+36,right_s1_mouth,"4mm spheres around coordinates from Roux et al. 2018, 2020",
+37,left_SMA,Harvard-Oxford cortical atlas (FSL) thresholded @ 25% - juxtapositional lobule cortex,
+38,right_SMA,Harvard-Oxford cortical atlas (FSL) thresholded @ 25% - juxtapositional lobule cortex,
+39,left_dorsal_premotor_cortex,Harvard-Oxford cortical atlas (FSL) thresholded @ 25% - portion of superior frontal gyrus manually selected base on neuroanatomic landmarks,
+40,right_dorsal_premotor_cortex,Harvard-Oxford cortical atlas (FSL) thresholded @ 25% - portion of superior frontal gyrus manually selected base on neuroanatomic landmarks,
+41,left_ventral_premotor_cortex,"Harvard-Oxford cortical atlas (FSL) thresholded @ 25% - area ventral to dorsal premotor cortex, manually selected base on neuroanatomic landmarks",
+42,right_ventral_premotor_cortex,"Harvard-Oxford cortical atlas (FSL) thresholded @ 25% - area ventral to dorsal premotor cortex, manually selected base on neuroanatomic landmarks",
+43,left_OP1,Jeulich (FSL) thresholded @ 50% - first looked the Jeulich atlas 'GM Secondary Somatosensory Cortex / Parietal Operculum OP1',
+44,right_OP1,Jeulich (FSL) thresholded @ 50% - first looked the Jeulich atlas 'GM Secondary Somatosensory Cortex / Parietal Operculum OP1',
+45,left_OP4,Jeulich (FSL) thresholded @ 50% - first looked the Jeulich atlas 'GM Secondary Somatosensory Cortex / Parietal Operculum OP4' and then manually edited in cross reference to HO Cortical Atlas area 'Central Opercular Cortex' - selected voxels overlapping across the two atlases,
+46,right_OP4,Jeulich (FSL) thresholded @ 50% - first looked the Jeulich atlas 'GM Secondary Somatosensory Cortex / Parietal Operculum OP4' and then manually edited in cross reference to HO Cortical Atlas area 'Central Opercular Cortex' - selected voxels overlapping across the two atlases,
+47,left_posterior_cingulate,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, posterior division', atlas intensity value = 30 - subtracted left and right whole brain masks to split into left and right posterior cingulate",
+48,right_posterior_cingulate,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, posterior division', atlas intensity value = 30 - subtracted left and right whole brain masks to split into left and right posterior cingulate",
+49,left_mid_cingulate,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, anterior division', atlas intensity value = 29 - manually selected voxels from this mask between the anterior boundary of the posterior cingulate mask and the anterior boundary of the SMA",
+50,right_mid_cingulate,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, anterior division', atlas intensity value = 29 - manually selected voxels from this mask between the anterior boundary of the posterior cingulate mask and the anterior boundary of the SMA",
+51,left_dACC,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, anterior division', atlas intensity value = 29 - manually selected voxels from this mask between the anterior boundary of the SMA and curvature of the angle of the ventricle",
+52,right_dACC,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, anterior division', atlas intensity value = 29 - manually selected voxels from this mask between the anterior boundary of the SMA and curvature of the angle of the ventricle",
+53,left_sgACC_pgACC,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, anterior division', atlas intensity value = 29 - manually selected the anterior-most voxels from this mask that were not considered part of the dACC mask",
+54,right_sgACC_pgACC,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'cingulate gyrus, anterior division', atlas intensity value = 29 - manually selected the anterior-most voxels from this mask that were not considered part of the dACC mask",
+55,left_paracingulate,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'paraginculate gyrus', atlas intensity value = 28 - subtracted left and right whole brain masks to split into left and right paracingulate",
+56,right_paracingulate,"Harvard-Oxford cortical atlas (FSL) thresholded @ 50% - 'paraginculate gyrus', atlas intensity value = 28 - subtracted left and right whole brain masks to split into left and right paracingulate",
+57,left_caudate,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
+58,right_caudate,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
+59,left_putamen,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
+60,right_putamen,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
+61,left_pallidum,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
+62,right_pallidum,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
+63,left_STN,ATAG Atlas/MNI05 - STN_L_prob_mni_non_linear_young.nii.gz' - binarized and resampled,Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+64,right_STN,ATAG Atlas/MNI05 - STN_R_prob_mni_non_linear_young.nii.gz' - binarized and resampled,Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+65,left_SN,ATAG Atlas/MNI05 - SN_L_prob_mni_non_linear_young.nii.gz' - binarized and resampled,Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+66,right_SN,ATAG Atlas/MNI05 - SN_R_prob_mni_non_linear_young.nii.gz' - binarized and resampled,Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+67,left_RN,ATAG Atlas/MNI05 - RN_L_prob_mni_non_linear_young.nii.gz' - binarized and resampled,Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+68,right_RN,ATAG Atlas/MNI05 - RN_R_prob_mni_non_linear_young.nii.gz' - binarized and resampled,Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+69,PAG,ATAG Atlas/MNI05 - 'PAG_prob_mni_non_linear_young.nii.gz' - binarized and resampled,Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+70,left_brainstem,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'brainstem', atlas intensity value = 8 (subtracted the PAG mask, then substracted right and left whole brain masks to split into left and right brainstem)",Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+71,right_brainstem,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'brainstem', atlas intensity value = 8 (subtracted the PAG mask, then substracted right and left whole brain masks to split into left and right brainstem)",Source of atlas: https://www.nitrc.org/projects/atag - see 10.1016/j.neuroimage.2014.03.032
+72,left_thalamus,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'right thalamus', atlast intensity value = 15",
+73,right_thalamus,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'right thalamus', atlast intensity value = 4",
+74,left_cerebellar_hemisphere,"Probabalistic Cerebellar Atlas - Thresholded at 50% 
+-Cerebellar hemispheres (left and right): IV, V, VI, Crus I, Crus II, VIIb, VIIIa, VIIIb, IX, X added together
+-Cerebellar Vermis: Vermis Crus I and II, Vermis VIIb, Vermis VIIIa, Vermis VIIIb, Vermis IX, Vermis X added together
+-Cerebellar Medullary Center:  this is mostly white matter, but some of the deep Cerebellar nuclei are also located here (e.g. dentate) - this was created by subtracting a whole brain mask from the Cerebellar hemisphere and cerbellar vermis ROI to get a mask that covered the Cerebellar area not contained within these ROI",
+75,right_cerebellar_hemisphere,,
+76,cerebellar_vermis,,
+77,cerebellar_medullary_center,,
+78,left_lateral_IOC,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'lateral occipital cortex, inferior division', atlas intensity value = 23",*These regions were selected because they are defined cortical regions which overlap heavily with functional atlases showing responsiveness to faces as visual stimuli (see https://doi.org/10.1093/cercor/bhaa246 - VisF atlas).  'Face selective' areas recorded in the VisF functional atlas overlap most with these 4 occipito-temporal areas.
+79,right_lateral_IOC,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'lateral occipital cortex, inferior division', atlas intensity value = 23",
+80,left_OFG,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'occipital fusiform gyrus', atlas intensity value = 40",
+81,right_OFG,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'occipital fusiform gyrus', atlas intensity value = 40",
+82,left_temporal_OFC,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'temporal fusiform cortex, posterior division', atlas intensity value = 38",
+83,right_temporal_OFC,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'temporal fusiform cortex, posterior division', atlas intensity value = 38",
+84,left_posterior_TFC,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'temporal occipital fusiform cortex, posterior division', atlas intensity value = 39",
+85,right_posterior_TFC,"Harvard Oxford Cortical Atlas thresholded @ 25% - 'temporal occipital fusiform cortex, posterior division', atlas intensity value = 39",
+86,left_orbitofrontal_cortex,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'frontal orbital cortex', atlas intensity value = 33",
+87,right_orbitofrontal_cortex,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'frontal orbital cortex', atlas intensity value = 33",
+88,left_frontal_pole,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'frontal pole', atlas intensity value = 1",
+89,right_frontal_pole,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'frontal pole', atlas intensity value = 1",
+90,left_frontal_medial_cortex,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'frontal medial cortex', atlas intensity value = 25",
+91,right_frontal_medial_cortex,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'frontal medial cortex', atlas intensity value = 25",
+92,left_subcallosal_cortex,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'subcallosal cortex', atlas intensity value = 27",
+93,right_subcallosal_cortex,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'subcallosal cortex', atlas intensity value = 27",
+94,left_precuneus,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'precuneous cortex', atlas intensity value = 31",
+95,right_precuneus,"Harvard-Oxford subcortical atlas (FSL) tresholded @ 50% - 'precuneous cortex', atlas intensity value = 31",
+96,left_accumbens,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
+97,right_accumbens ,Harvard-Oxford subcortical atlas (FSL) tresholded @ 50%,
