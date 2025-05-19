@@ -1,0 +1,69 @@
+---
+procyamlversion: 3.0.0-dev.0
+
+description: XCP-D, https://xcp-d.readthedocs.io/en/latest
+
+jobtemplate: job_template_v3.txt
+
+containers:
+  - name: xcpd
+    path: xcp_d_0.7.5.sif
+    source: docker://pennlinc/xcp_d:0.7.5
+
+requirements:
+  walltime: 1-0
+  memory: 8000
+
+inputs:
+  xnat:
+      
+    filters:
+      - type: match
+        inputs: scan_fmri,assr_fmriprep/scan_fmri
+
+    scans:
+
+      - name: scan_fmri
+        types: 'Resting state'
+
+    assessors:
+        
+        - name: assr_fmriprep
+          proctypes: fmriprep-native_v24
+          resources:
+            - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
+
+outputs:
+  - {path: HTML, type: DIR, resource: HTML}
+  - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
+  - {path: qc.csv, type: FILE, resource: QC}
+  - {path: COVERAGE, type: DIR, resource: COVERAGE}
+
+command:
+  type: singularity_run
+  container: xcpd
+  args: >-
+    --work-dir /tmp
+    --fs-license-file /opt/license.txt
+    --skip-dcan-qc
+    --smoothing 0
+    --skip-parcellation
+    --nuisance-regressors acompcor
+    --fd-thresh 0
+    --disable-bandpass-filter
+    --min-coverage 0.5
+    /INPUTS/fmriprepBIDS/fmriprepBIDS
+    /OUTPUTS/xcpdBIDS
+    participant
+  extraopts: --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
+
+post:
+  type: singularity_exec
+  container: xcpd
+  args: >-
+    bash -c '
+    mkdir /OUTPUTS/HTML &&
+    cp /OUTPUTS/xcpdBIDS/sub-*.html /OUTPUTS/HTML &&
+    cp -R /OUTPUTS/xcpdBIDS/sub-* /OUTPUTS/HTML &&
+    rm -fr /OUTPUTS/HTML/sub-*/ses-*
+    '
