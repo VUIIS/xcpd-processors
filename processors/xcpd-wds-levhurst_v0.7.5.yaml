@@ -50,20 +50,29 @@ outputs:
 
 
 # First copy the wavelet filtered image into fmriprep dir
+# Note we are OVERWRITING the original preproc 
 pre:
   type: singularity_exec
   container: xcpd
   args: >-
     bash -c \"
     preproc_niigz=\\\$(ls /INPUTS/fmriprepBIDS/fmriprepBIDS/sub-*/ses-*/func/*_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz) &&
-    wds_niigz=\\\$(echo \\\$preproc_niigz | sed 's/desc-preproc_bold/desc-wds_bold/') &&
-    cp /INPUTS/wdsfmri.nii.gz \\\$wds_niigz &&
-    echo '{{ \\\"bold\\\": {{ \\\"desc\\\": [\\\"wds\\\"] }} }}' 
-      > /INPUTS/bids-filter-file.json
+    cp /INPUTS/wdsfmri.nii.gz \\\$preproc_niigz
     \"
+
+# Not overwriting - issue with filename tags?
+#  args: >-
+#    bash -c \"
+#    preproc_niigz=\\\$(ls /INPUTS/fmriprepBIDS/fmriprepBIDS/sub-*/ses-*/func/*_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz) &&
+#    wds_niigz=\\\$(echo \\\$preproc_niigz | sed 's/desc-preproc_bold/desc-wds_bold/') &&
+#    cp /INPUTS/wdsfmri.nii.gz \\\$wds_niigz &&
+#    echo '{{ \\\"bold\\\": {{ \\\"desc\\\": [\\\"wds\\\"] }} }}' 
+#      > /INPUTS/bids-filter-file.json
+#    \"
 
 
 # Run xcpd proper
+#        --bids-filter-file /INPUTS/bids-filter-file.json
 command:
   type: singularity_run
   container: xcpd
@@ -77,7 +86,6 @@ command:
     --fd-thresh 0
     --disable-bandpass-filter
     --min-coverage 0.5
-    --bids-filter-file /INPUTS/bids-filter-file.json
     /INPUTS/fmriprepBIDS/fmriprepBIDS
     /OUTPUTS/xcpdBIDS
     participant
