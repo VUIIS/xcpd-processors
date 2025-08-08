@@ -56,9 +56,8 @@ pre:
   args: >-
     bash -c \"
     preproc_niigz=\\\$(ls /INPUTS/fmriprepBIDS/fmriprepBIDS/sub-*/ses-*/func/*_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz) &&
-    fbase=\\\$(basename \\\$preproc_niigz) &&
-    wds_niigz=\\\$(echo \\\$fbase | sed 's/desc-preproc_bold/desc-wds_bold/') &&
-    cp /INPUTS/wdsfmri.nii.gz /INPUTS/fmriprepBIDS/fmriprepBIDS/sub-*/ses-*/func/\\\$wds_niigz &&
+    wds_niigz=\\\$(echo \\\$preproc_niigz | sed 's/desc-preproc_bold/desc-wds_bold/') &&
+    cp /INPUTS/wdsfmri.nii.gz \\\$wds_niigz &&
     echo '{{ \\\"bold\\\": {{ \\\"desc\\\": [\\\"wds\\\"] }} }}' 
       > /INPUTS/bids-filter-file.json
     \"
