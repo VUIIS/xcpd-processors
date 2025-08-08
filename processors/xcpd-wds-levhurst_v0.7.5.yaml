@@ -12,7 +12,7 @@ containers:
 
 requirements:
   walltime: 1-0
-  memory: 8000
+  memory: 8G
 
 inputs:
   xnat:
@@ -20,7 +20,9 @@ inputs:
     filters:
       - type: match
         inputs: scan_fmri,assr_fmriprep/scan_fmri
+      - type: match
         inputs: scan_fmri,assr_bwt/scan_fmri
+      - type: match
         inputs: assr_fmriprep/scan_fmri,assr_bwt/scan_fmri
 
     scans:
@@ -52,8 +54,14 @@ pre:
   type: singularity_exec
   container: xcpd
   args: >-
-    bash -c '
-    '
+    bash -c \"
+    preproc_niigz=\\\$(ls /INPUTS/fmriprepBIDS/fmriprepBIDS/sub-*/ses-*/func/*_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz) &&
+    fbase=\\\$(basename \\\$preproc_niigz) &&
+    wds_niigz=\\\$(echo \\\$fbase | sed 's/desc-preproc_bold/desc-wds_bold/') &&
+    cp /INPUTS/wdsfmri.nii.gz /INPUTS/fmriprepBIDS/fmriprepBIDS/sub-*/ses-*/func/\\\$wds_niigz &&
+    echo '{{ \\\"bold\\\": {{ \\\"desc\\\": [\\\"wds\\\"] }} }}' 
+      > /INPUTS/bids-filter-file.json
+    \"
 
 
 # Run xcpd proper
@@ -70,6 +78,7 @@ command:
     --fd-thresh 0
     --disable-bandpass-filter
     --min-coverage 0.5
+    --bids-filter-file /INPUTS/bids-filter-file.json
     /INPUTS/fmriprepBIDS/fmriprepBIDS
     /OUTPUTS/xcpdBIDS
     participant
