@@ -38,7 +38,7 @@ inputs:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
         - name: assr_bwt
-          proctypes: bwt-docker_v1
+          proctypes: test-194519-bwt-wds_v1
           resources:
             - {resource: DESPIKED, ftype: FILE, fdest: wdsfmri.nii.gz}
 
@@ -61,6 +61,10 @@ pre:
     \"
 
 # Not overwriting - issue with filename tags?
+# If it worked we would use 
+#        --bids-filter-file /INPUTS/bids-filter-file.json
+# in the xcpd command line
+#
 #  args: >-
 #    bash -c \"
 #    preproc_niigz=\\\$(ls /INPUTS/fmriprepBIDS/fmriprepBIDS/sub-*/ses-*/func/*_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz) &&
@@ -72,7 +76,6 @@ pre:
 
 
 # Run xcpd proper
-#        --bids-filter-file /INPUTS/bids-filter-file.json
 command:
   type: singularity_run
   container: xcpd
