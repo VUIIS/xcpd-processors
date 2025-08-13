@@ -38,7 +38,7 @@ inputs:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
         - name: assr_bwt
-          proctypes: test-194519-bwt-wds_v1
+          proctypes: bwt-wds_v1
           resources:
             - {resource: DESPIKED, ftype: FILE, fdest: wdsfmri.nii.gz}
 
