@@ -24,12 +24,12 @@ inputs:
     scans:
 
       - name: scan_fmri
-        types: rest1_3mm_TR2000
+        types: Funct_Run1,REST*,Rest*
 
     assessors:
         
         - name: assr_fmriprep
-          proctypes: fmriprep_v23
+          proctypes: fmriprep_v24
           resources:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
