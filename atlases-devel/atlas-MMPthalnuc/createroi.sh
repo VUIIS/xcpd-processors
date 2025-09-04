@@ -32,9 +32,10 @@ flirt -in thal_hi \
 	-applyxfm \
 	-interp nearestneighbour
 
+# Create cortex+thal anti-mask to remove overlaps with hippocampus
+fslmaths cort_space-MNI152NLin6Asym_res-02_dseg -add thal_lo -bin -sub 1 -mul -1 antimask
+
 # Extract hippocampus from Tian level 3
-# FIXME One of these has a tiny bit of overlap with 122 in cortex so mask out cortex
-#
 #  1  rh_HIP_head_m
 #  2  rh_HIP_head_l
 #  3  rh_HIP_body
@@ -44,14 +45,14 @@ flirt -in thal_hi \
 # 28  lh_HIP_body
 # 29  lh_HIP_tail
 tsc=Tian2020MSA/3T/Subcortex-Only/Tian_Subcortex_S3_3T
-fslmaths $tsc -thr 25.5 -uthr 26.5 -bin -mul 420 lh_HIP_head_m
-fslmaths $tsc -thr 26.5 -uthr 27.5 -bin -mul 421 lh_HIP_head_l
-fslmaths $tsc -thr 27.5 -uthr 28.5 -bin -mul 422 lh_HIP_body
-fslmaths $tsc -thr 28.5 -uthr 29.5 -bin -mul 423 lh_HIP_tail
-fslmaths $tsc -thr 0.5 -uthr 1.5 -bin -mul 520 rh_HIP_head_m
-fslmaths $tsc -thr 1.5 -uthr 2.5 -bin -mul 521 rh_HIP_head_l
-fslmaths $tsc -thr 2.5 -uthr 3.5 -bin -mul 522 rh_HIP_body
-fslmaths $tsc -thr 3.5 -uthr 4.5 -bin -mul 523 rh_HIP_tail
+fslmaths $tsc -thr 25.5 -uthr 26.5 -bin -mul 420 -mul antimask lh_HIP_head_m
+fslmaths $tsc -thr 26.5 -uthr 27.5 -bin -mul 421 -mul antimask lh_HIP_head_l
+fslmaths $tsc -thr 27.5 -uthr 28.5 -bin -mul 422 -mul antimask lh_HIP_body
+fslmaths $tsc -thr 28.5 -uthr 29.5 -bin -mul 423 -mul antimask lh_HIP_tail
+fslmaths $tsc -thr 0.5 -uthr 1.5 -bin -mul 520 -mul antimask rh_HIP_head_m
+fslmaths $tsc -thr 1.5 -uthr 2.5 -bin -mul 521 -mul antimask rh_HIP_head_l
+fslmaths $tsc -thr 2.5 -uthr 3.5 -bin -mul 522 -mul antimask rh_HIP_body
+fslmaths $tsc -thr 3.5 -uthr 4.5 -bin -mul 523 -mul antimask rh_HIP_tail
 
 
 # Combine
