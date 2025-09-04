@@ -14,11 +14,11 @@ head -n 361 atlas-MMPthal_dseg.tsv > cort_dseg.tsv
 # Atlas-Thalamus_space-MNI_hemi-right_label-AllNuclei_desc-MaxProb.nii
 fslmaths Atlas-Thalamus_space-MNI_hemi-left_label-AllNuclei_desc-MaxProb.nii.gz \
     -uthr 12 tmpL
-fslmaths tmpL -add 400 -thr 401 thalL
+fslmaths tmpL -add 500 -thr 501 thalL
 
 fslmaths Atlas-Thalamus_space-MNI_hemi-right_label-AllNuclei_desc-MaxProb.nii.gz \
     -uthr 12 tmpR
-fslmaths tmpR -add 500 -thr 501 thalR
+fslmaths tmpR -add 400 -thr 401 thalR
 
 fslmaths thalL -add thalR thal_hi
 
@@ -45,22 +45,22 @@ fslmaths cort_space-MNI152NLin6Asym_res-02_dseg -add thal_lo -bin -sub 1 -mul -1
 # 28  lh_HIP_body
 # 29  lh_HIP_tail
 tsc=Tian2020MSA/3T/Subcortex-Only/Tian_Subcortex_S3_3T
-fslmaths $tsc -thr 25.5 -uthr 26.5 -bin -mul 420 -mul antimask lh_HIP_head_m
-fslmaths $tsc -thr 26.5 -uthr 27.5 -bin -mul 421 -mul antimask lh_HIP_head_l
-fslmaths $tsc -thr 27.5 -uthr 28.5 -bin -mul 422 -mul antimask lh_HIP_body
-fslmaths $tsc -thr 28.5 -uthr 29.5 -bin -mul 423 -mul antimask lh_HIP_tail
-fslmaths $tsc -thr 0.5 -uthr 1.5 -bin -mul 520 -mul antimask rh_HIP_head_m
-fslmaths $tsc -thr 1.5 -uthr 2.5 -bin -mul 521 -mul antimask rh_HIP_head_l
-fslmaths $tsc -thr 2.5 -uthr 3.5 -bin -mul 522 -mul antimask rh_HIP_body
-fslmaths $tsc -thr 3.5 -uthr 4.5 -bin -mul 523 -mul antimask rh_HIP_tail
+fslmaths $tsc -thr 0.5 -uthr 1.5 -bin -mul 420 -mul antimask rh_HIP_head_m
+fslmaths $tsc -thr 1.5 -uthr 2.5 -bin -mul 421 -mul antimask rh_HIP_head_l
+fslmaths $tsc -thr 2.5 -uthr 3.5 -bin -mul 422 -mul antimask rh_HIP_body
+fslmaths $tsc -thr 3.5 -uthr 4.5 -bin -mul 423 -mul antimask rh_HIP_tail
+fslmaths $tsc -thr 25.5 -uthr 26.5 -bin -mul 520 -mul antimask lh_HIP_head_m
+fslmaths $tsc -thr 26.5 -uthr 27.5 -bin -mul 521 -mul antimask lh_HIP_head_l
+fslmaths $tsc -thr 27.5 -uthr 28.5 -bin -mul 522 -mul antimask lh_HIP_body
+fslmaths $tsc -thr 28.5 -uthr 29.5 -bin -mul 523 -mul antimask lh_HIP_tail
 
 
 # Combine
 fslmaths cort_space-MNI152NLin6Asym_res-02_dseg \
 	-add thal_lo \
-	-add lh_HIP_head_m -add lh_HIP_head_l -add lh_HIP_body -add lh_HIP_tail \
 	-add rh_HIP_head_m -add rh_HIP_head_l -add rh_HIP_body -add rh_HIP_tail \
-	atlas-MMPthalnuc_space-MNI152NLin6Asym_res-02_dseg
+	-add lh_HIP_head_m -add lh_HIP_head_l -add lh_HIP_body -add lh_HIP_tail \
+	atlas-MMPthalhipp_space-MNI152NLin6Asym_res-02_dseg
 
 rm *HIP*.nii.gz
 
@@ -81,35 +81,35 @@ rm *HIP*.nii.gz
 # 17	CL    DROP
 # 18	VPM   DROP
 cat << EOF > thalhipp_dseg.tsv
-402	lh_thal_AV
-404	lh_thal_VA
-405	lh_thal_VLa
-406	lh_thal_VLp
-407	lh_thal_VPL
-408	lh_thal_PUL
-409	lh_thal_LGN
-410	lh_thal_MGN
-411	lh_thal_CM
-412	lh_thal_MD
-420	lh_HIP_head_m
-421	lh_HIP_head_l
-422	lh_HIP_body
-423	lh_HIP_tail
-502	rh_thal_AV
-504	rh_thal_VA
-505	rh_thal_VLa
-506	rh_thal_VLp
-507	rh_thal_VPL
-508	rh_thal_PUL
-509	rh_thal_LGN
-510	rh_thal_MGN
-511	rh_thal_CM
-512	rh_thal_MD
-520	rh_HIP_head_m
-521	rh_HIP_head_l
-522	rh_HIP_body
-523	rh_HIP_tail
+402	rh_thal_AV
+404	rh_thal_VA
+405	rh_thal_VLa
+406	rh_thal_VLp
+407	rh_thal_VPL
+408	rh_thal_PUL
+409	rh_thal_LGN
+410	rh_thal_MGN
+411	rh_thal_CM
+412	rh_thal_MD
+420	rh_HIP_head_m
+421	rh_HIP_head_l
+422	rh_HIP_body
+423	rh_HIP_tail
+502	lh_thal_AV
+504	lh_thal_VA
+505	lh_thal_VLa
+506	lh_thal_VLp
+507	lh_thal_VPL
+508	lh_thal_PUL
+509	lh_thal_LGN
+510	lh_thal_MGN
+511	lh_thal_CM
+512	lh_thal_MD
+520	lh_HIP_head_m
+521	lh_HIP_head_l
+522	lh_HIP_body
+523	lh_HIP_tail
 EOF
 
 # Make the complete label list
-cat cort_dseg.tsv thalhipp_dseg.tsv > atlas-MMPthalnuc_dseg.tsv
+cat cort_dseg.tsv thalhipp_dseg.tsv > atlas-MMPthalhipp_dseg.tsv
