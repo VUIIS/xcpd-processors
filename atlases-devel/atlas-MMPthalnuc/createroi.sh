@@ -22,6 +22,8 @@ fslmaths tmpR -add 500 -thr 501 thalR
 
 fslmaths thalL -add thalR thal_hi
 
+rm tmpL.nii.gz tmpR.nii.gz
+
 # Resample thal to 2mm geom
 flirt -in thal_hi \
 	-ref cort_space-MNI152NLin6Asym_res-02_dseg \
@@ -30,9 +32,36 @@ flirt -in thal_hi \
 	-applyxfm \
 	-interp nearestneighbour
 
+# Extract hippocampus from Tian level 3
+# FIXME One of these has a tiny bit of overlap with 122 in cortex so mask out cortex
+#
+#  1  rh_HIP_head_m
+#  2  rh_HIP_head_l
+#  3  rh_HIP_body
+#  4  rh_HIP_tail
+# 26  lh_HIP_head_m
+# 27  lh_HIP_head_l
+# 28  lh_HIP_body
+# 29  lh_HIP_tail
+tsc=Tian2020MSA/3T/Subcortex-Only/Tian_Subcortex_S3_3T
+fslmaths $tsc -thr 25.5 -uthr 26.5 -bin -mul 420 lh_HIP_head_m
+fslmaths $tsc -thr 26.5 -uthr 27.5 -bin -mul 421 lh_HIP_head_l
+fslmaths $tsc -thr 27.5 -uthr 28.5 -bin -mul 422 lh_HIP_body
+fslmaths $tsc -thr 28.5 -uthr 29.5 -bin -mul 423 lh_HIP_tail
+fslmaths $tsc -thr 0.5 -uthr 1.5 -bin -mul 520 rh_HIP_head_m
+fslmaths $tsc -thr 1.5 -uthr 2.5 -bin -mul 521 rh_HIP_head_l
+fslmaths $tsc -thr 2.5 -uthr 3.5 -bin -mul 522 rh_HIP_body
+fslmaths $tsc -thr 3.5 -uthr 4.5 -bin -mul 523 rh_HIP_tail
+
+
 # Combine
-fslmaths cort_space-MNI152NLin6Asym_res-02_dseg -add thal_lo \
+fslmaths cort_space-MNI152NLin6Asym_res-02_dseg \
+	-add thal_lo \
+	-add lh_HIP_head_m -add lh_HIP_head_l -add lh_HIP_body -add lh_HIP_tail \
+	-add rh_HIP_head_m -add rh_HIP_head_l -add rh_HIP_body -add rh_HIP_tail \
 	atlas-MMPthalnuc_space-MNI152NLin6Asym_res-02_dseg
+
+rm *HIP*.nii.gz
 
 # Thal labels +400 for left, +500 for right
 #  region	label
@@ -50,7 +79,7 @@ fslmaths cort_space-MNI152NLin6Asym_res-02_dseg -add thal_lo \
 # 14	MTT   DROP
 # 17	CL    DROP
 # 18	VPM   DROP
-cat << EOF > thal_dseg.tsv
+cat << EOF > thalhipp_dseg.tsv
 402	lh_thal_AV
 404	lh_thal_VA
 405	lh_thal_VLa
@@ -61,6 +90,10 @@ cat << EOF > thal_dseg.tsv
 410	lh_thal_MGN
 411	lh_thal_CM
 412	lh_thal_MD
+420	lh_HIP_head_m
+421	lh_HIP_head_l
+422	lh_HIP_body
+423	lh_HIP_tail
 502	rh_thal_AV
 504	rh_thal_VA
 505	rh_thal_VLa
@@ -71,7 +104,11 @@ cat << EOF > thal_dseg.tsv
 510	rh_thal_MGN
 511	rh_thal_CM
 512	rh_thal_MD
+520	rh_HIP_head_m
+521	rh_HIP_head_l
+522	rh_HIP_body
+523	rh_HIP_tail
 EOF
 
 # Make the complete label list
-cat cort_dseg.tsv thal_dseg.tsv > atlas-MMPthalnuc_dseg.tsv
+cat cort_dseg.tsv thalhipp_dseg.tsv > atlas-MMPthalnuc_dseg.tsv
