@@ -6,4 +6,5 @@
 fslmaths Schaefer2018_200Parcels_7Networks_order_FSLMNI152_1mm -bin tmpS
 fslmaths Tian_Subcortex_S3_3T_1mm -bin tmpT
 fslmaths tmpS -add tmpT tmpBoth
-fslstats tmpBoth -R
+fslmaths tmpBoth -thr 2 overlap
+rm -f tmp*.nii.gz
