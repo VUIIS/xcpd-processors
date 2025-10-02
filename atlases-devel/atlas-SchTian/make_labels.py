@@ -4,6 +4,7 @@ import pandas
 
 tian = pandas.read_csv('Tian_Subcortex_S3_3T_label.txt', header=None, names=['label'])
 tian['index'] = [x+2000 for x in range(1, tian.shape[0]+1)]
+tian['label'] = 'TianS3_' + tian['label']
 
 s200 = pandas.read_csv(
     'Schaefer2018_200Parcels_7Networks_order.lut', 
