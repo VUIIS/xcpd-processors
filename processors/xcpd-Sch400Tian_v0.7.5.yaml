@@ -78,7 +78,7 @@ post:
       --fmriprep_dir /INPUTS/fmriprepBIDS/fmriprepBIDS
       --xcpd_dir /OUTPUTS/xcpdBIDS
       --space MNI152NLin6Asym
-      --atlas Sch200Tian
+      --atlas Sch400Tian
       --min_coverage 0
       --out_dir /OUTPUTS &&
     fisher_z.py --xcpd_dir /OUTPUTS/xcpdBIDS
