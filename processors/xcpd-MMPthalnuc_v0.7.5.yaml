@@ -11,8 +11,8 @@ containers:
     source: docker://pennlinc/xcp_d:0.7.5
 
 requirements:
-  walltime: 1-0
-  memory: 8000
+  walltime: 2-0
+  memory: 16000
 
 inputs:
   xnat:
@@ -24,12 +24,12 @@ inputs:
     scans:
 
       - name: scan_fmri
-        types: Funct_Run1,REST*,Rest*
+        types: rest1_3mm_TR2000
 
     assessors:
         
         - name: assr_fmriprep
-          proctypes: fmriprep_v24
+          proctypes: fmriprep_v23
           resources:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
@@ -38,6 +38,7 @@ outputs:
   - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
   - {path: qc.csv, type: FILE, resource: QC}
   - {path: coverage.csv, type: FILE, resource: COVERAGE}
+  - {path: xcpd-processors-2.3.3/scripts, type: DIR, resource: SCRIPTS}
 
 command:
   type: singularity_run
@@ -52,7 +53,7 @@ command:
     --fd-thresh 0
     --lower-bpf 0.01
     --upper-bpf 0.10
-    --min-coverage 0.5
+    --min-coverage 0
     /INPUTS/fmriprepBIDS/fmriprepBIDS
     /OUTPUTS/xcpdBIDS
     participant
@@ -69,16 +70,16 @@ post:
     cp -R /OUTPUTS/xcpdBIDS/sub-* /OUTPUTS/HTML &&
     rm -fr /OUTPUTS/HTML/sub-*/ses-* &&
     
-    cd /INPUTS &&
+    cd /OUTPUTS &&
     curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.3.3.tar.gz &&
     tar -zxf xcpd-processors.tar.gz &&
-    export PATH=/INPUTS/xcpd-processors-2.3.3/scripts:\$PATH &&
+    export PATH=/OUTPUTS/xcpd-processors-2.3.3/scripts:\$PATH &&
     custom_parcellation.py
       --fmriprep_dir /INPUTS/fmriprepBIDS/fmriprepBIDS
       --xcpd_dir /OUTPUTS/xcpdBIDS
       --space MNI152NLin6Asym
       --atlas MMPthalnuc
-      --min_coverage 0.5
+      --min_coverage 0
       --out_dir /OUTPUTS &&
     fisher_z.py --xcpd_dir /OUTPUTS/xcpdBIDS
     '
