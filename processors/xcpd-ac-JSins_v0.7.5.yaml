@@ -78,7 +78,7 @@ post:
     custom_parcellation.py
       --fmriprep_dir /INPUTS/fmriprepBIDS/fmriprepBIDS
       --xcpd_dir /OUTPUTS/xcpdBIDS
-      --space MNI152NLin6Asym
+      --space MNI152NLin2009cAsym
       --atlas JSins
       --min_coverage 0
       --out_dir /OUTPUTS &&
