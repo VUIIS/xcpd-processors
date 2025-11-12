@@ -38,7 +38,7 @@ outputs:
   - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
   - {path: qc.csv, type: FILE, resource: QC}
   - {path: coverage.csv, type: FILE, resource: COVERAGE}
-  - {path: xcpd-processors-2.5.0/scripts, type: DIR, resource: SCRIPTS}
+  - {path: xcpd-processors-2.5.1/scripts, type: DIR, resource: SCRIPTS}
 
 
 command:
@@ -71,9 +71,9 @@ post:
     rm -fr /OUTPUTS/HTML/sub-*/ses-* &&
     
     cd /OUTPUTS &&
-    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.5.0.tar.gz &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.5.1.tar.gz &&
     tar -zxf xcpd-processors.tar.gz &&
-    export PATH=/OUTPUTS/xcpd-processors-2.5.0/scripts:\$PATH &&
+    export PATH=/OUTPUTS/xcpd-processors-2.5.1/scripts:\$PATH &&
 
     custom_parcellation.py
       --fmriprep_dir /INPUTS/fmriprepBIDS/fmriprepBIDS
