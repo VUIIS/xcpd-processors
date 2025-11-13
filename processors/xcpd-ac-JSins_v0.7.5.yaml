@@ -89,8 +89,7 @@ post:
       --xcpd_dir /OUTPUTS/xcpdBIDS
       --space MNI152NLin2009cAsym
       --atlas JSins
-      --saveR
       --saveZ
-      --fwhm 0 5
+      --fwhm 4
     
     '
