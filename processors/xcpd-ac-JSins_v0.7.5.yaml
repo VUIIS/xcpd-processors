@@ -83,5 +83,14 @@ post:
       --min_coverage 0
       --out_dir /OUTPUTS &&
       
-    fisher_z.py --xcpd_dir /OUTPUTS/xcpdBIDS
+    fisher_z.py --xcpd_dir /OUTPUTS/xcpdBIDS &&
+    
+    connectivity_maps.py
+      --xcpd_dir /OUTPUTS/xcpdBIDS
+      --space MNI152NLin2009cAsym
+      --atlas JSins
+      --saveR
+      --saveZ
+      --fwhm 0 5
+    
     '
