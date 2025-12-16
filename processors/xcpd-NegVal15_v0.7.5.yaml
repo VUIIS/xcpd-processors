@@ -1,0 +1,95 @@
+---
+procyamlversion: 3.0.0-dev.0
+
+description: XCP-D, https://xcp-d.readthedocs.io/en/latest
+
+jobtemplate: job_template_v3.txt
+
+containers:
+  - name: xcpd
+    path: xcp_d_0.7.5.sif
+    source: docker://pennlinc/xcp_d:0.7.5
+
+requirements:
+  walltime: 1-0
+  memory: 8000
+
+inputs:
+  xnat:
+      
+    filters:
+      - type: match
+        inputs: scan_fmri,assr_fmriprep/scan_fmri
+
+    scans:
+
+      - name: scan_fmri
+        types: rest1APA_FMRI_MB3_2_5mm_1300
+
+    assessors:
+        
+        - name: assr_fmriprep
+          proctypes: fmriprep-BAIS_v23
+          resources:
+            - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
+
+outputs:
+  - {path: HTML, type: DIR, resource: HTML}
+  - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
+  - {path: qc.csv, type: FILE, resource: QC}
+  - {path: coverage.csv, type: FILE, resource: COVERAGE}
+  - {path: xcpd-processors-2.6.0/scripts, type: DIR, resource: SCRIPTS}
+
+
+command:
+  type: singularity_run
+  container: xcpd
+  args: >-
+    --work-dir /tmp
+    --fs-license-file /opt/license.txt
+    --skip-dcan-qc
+    --smoothing 0
+    --skip-parcellation
+    --nuisance-regressors acompcor
+    --fd-thresh 0
+    --lower-bpf 0.01
+    --upper-bpf 0.10
+    --min-coverage 0
+    /INPUTS/fmriprepBIDS/fmriprepBIDS
+    /OUTPUTS/xcpdBIDS
+    participant
+  extraopts: --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
+
+post:
+  type: singularity_exec
+  container: xcpd
+  args: >-
+    bash -c '
+    mkdir /OUTPUTS/HTML &&
+    cp /OUTPUTS/xcpdBIDS/sub-*.html /OUTPUTS/HTML &&
+    cp -R /OUTPUTS/xcpdBIDS/sub-* /OUTPUTS/HTML &&
+    rm -fr /OUTPUTS/HTML/sub-*/ses-* &&
+    
+    cd /OUTPUTS &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.6.0.tar.gz &&
+    tar -zxf xcpd-processors.tar.gz &&
+    export PATH=/OUTPUTS/xcpd-processors-2.6.0/scripts:\$PATH &&
+
+    custom_parcellation.py
+      --fmriprep_dir /INPUTS/fmriprepBIDS/fmriprepBIDS
+      --xcpd_dir /OUTPUTS/xcpdBIDS
+      --space MNI152NLin6Asym
+      --atlas NegVal15
+      --min_coverage 0
+      --out_dir /OUTPUTS &&
+      
+    fisher_z.py --xcpd_dir /OUTPUTS/xcpdBIDS &&
+    
+    connectivity_maps.py
+      --xcpd_dir /OUTPUTS/xcpdBIDS
+      --space MNI152NLin6Asym
+      --atlas NegVal15
+      --saveZ
+      --fwhm 4
+    
+    '
