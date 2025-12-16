@@ -24,12 +24,12 @@ inputs:
     scans:
 
       - name: scan_fmri
-        types: rest1APA_FMRI_MB3_2_5mm_1300
+        types: Rest
 
     assessors:
         
         - name: assr_fmriprep
-          proctypes: fmriprep-BAIS_v23
+          proctypes: fmriprep-NVS-rest-nodc_v23
           resources:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
