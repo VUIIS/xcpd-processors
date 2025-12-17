@@ -1,0 +1,16 @@
+index	label	space	Description 
+1	Accumbens_L_HO50	MNI152 linear	The NA was defined using the Harvard-Oxford atlas thresholded at a 50% probability (Desikan et al., 2006). 
+2	Accumbens_R_HO50	MNI152 linear	The NA was defined using the Harvard-Oxford atlas thresholded at a 50% probability (Desikan et al., 2006). 
+3	Amygdala_L_HO50	MNI152 linear	The amygdala was defined using the Harvard-Oxford atlas thresholded at a 50% probability (Desikan et al., 2006). 
+4	Amygdala_R_HO50	MNI152 linear	The amygdala was defined using the Harvard-Oxford atlas thresholded at a 50% probability (Desikan et al., 2006). 
+5	BNST_3t_L_90	MNI152 linear SPM	The BNST was defined using a mask previously created my our group using an ultra-high field (7T) MRI and a specialized GRASE sequence to trace the BNST (Avery et al., 2014). To ensure the BNST was engaged during the task, whole brain activation was examined. 
+6	BNST_3t_R_90	MNI152 linear SPM	The BNST was defined using a mask previously created my our group using an ultra-high field (7T) MRI and a specialized GRASE sequence to trace the BNST (Avery et al., 2014). To ensure the BNST was engaged during the task, whole brain activation was examined. 
+7	dACC	MNI152 linear SPM	
+8	Hippocampus_Ant_L_HO	MNI152 linear	The anterior hippocampus was defined using the Harvard-Oxford atlas thresholded at a 50% probability (Desikan et al., 2006) using the additional boundary of the uncus to identify the anterior hippocampus. 
+9	Hippocampus_Ant_R_HO	MNI152 linear	The anterior hippocampus was defined using the Harvard-Oxford atlas thresholded at a 50% probability (Desikan et al., 2006) using the additional boundary of the uncus to identify the anterior hippocampus. 
+10	Hypothalamus_L	MNI152 linear SPM	The hypothalamus mask was created based on the Mai atlas using methods similar to those for the BNST (Avery et al., 2014). 
+11	Hypothalamus_R	MNI152 linear SPM	The hypothalamus mask was created based on the Mai atlas using methods similar to those for the BNST (Avery et al., 2014). 
+12	Insula_anterior_left	MNI152 linear SPM	The anterior insula was defined using a mask developed by Farb (2013) that has previously been used by our group to demonstrate anterior insula structural connectivity with the BNST (Flook et al., 2020)
+13	Insula_anterior_right	MNI152 linear SPM	The anterior insula was defined using a mask developed by Farb (2013) that has previously been used by our group to demonstrate anterior insula structural connectivity with the BNST (Flook et al., 2020)
+14	rACC	MNI152 linear SPM	
+15	vmPFC	MNI152 linear SPM	The vmPFC mask was defined based on a 10mm sphere surrounding the peak point of vmPFC-BNST connectivity from a previous study [x = 0, y = 43, z = -9] (Avery et al., 2014). 
