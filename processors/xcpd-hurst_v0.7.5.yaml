@@ -35,6 +35,7 @@ inputs:
 
 outputs:
   - {path: HTML, type: DIR, resource: HTML}
+  - {path: xcpd-processors/scripts, type: DIR, resource: SCRIPTS}
   - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
   - {path: qc.csv, type: FILE, resource: QC}
 
@@ -65,5 +66,11 @@ post:
     cp -R /OUTPUTS/xcpdBIDS/sub-* /OUTPUTS/HTML &&
     rm -fr /OUTPUTS/HTML/sub-*/ses-* &&
     
+    cd /OUTPUTS &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.7.0.tar.gz &&
+    tar -zxf xcpd-processors.tar.gz &&
+    mv xcpd-processors-* xcpd-processors &&
+    export PATH=/OUTPUTS/xcpd-processors/scripts:\$PATH &&
+
     qc_csv.py --xcpd_dir /OUTPUTS/xcpdBIDS --out_dir /OUTPUTS
     '
