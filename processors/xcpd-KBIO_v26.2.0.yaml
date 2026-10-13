@@ -1,0 +1,90 @@
+---
+procyamlversion: 3.0.0-dev.0
+
+description: XCP-D, https://xcp-d.readthedocs.io/en/latest
+
+jobtemplate: job_template_v3.txt
+
+containers:
+  - name: xcpd
+    path: xcp_d_26.2.0.sif
+    source: docker://pennlinc/xcp_d:26.2.0
+
+requirements:
+  walltime: '1-0'
+  memory: '8000'
+
+inputs:
+  xnat:
+      
+    filters:
+      - type: match
+        inputs: scan_fmri,assr_fmriprep/scan_fmri
+
+    scans:
+
+      - name: scan_fmri
+        types: rest1APA_FMRI_MB3_2_5mm_1300
+
+    assessors:
+        
+        - name: assr_fmriprep
+          proctypes: fmriprep-cifti-rest_v24
+          resources:
+            - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
+
+outputs:
+  - {path: HTML, type: DIR, resource: HTML}
+  - {path: xcpd-processors/scripts, type: DIR, resource: SCRIPTS}
+  - {path: xcpdBIDS, type: DIR, resource: xcpdBIDS}
+  - {path: qc.csv, type: FILE, resource: QC}
+
+pre:
+  type: singularity_exec
+  container: xcpd
+  args: >-
+    cd /OUTPUTS &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v3.0.0.tar.gz &&
+    tar -zxf xcpd-processors.tar.gz &&
+    mv xcpd-processors-* xcpd-processors
+       
+
+command:
+  type: singularity_run
+  container: xcpd
+  extraopts: --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
+  args: >-
+    --work-dir /tmp
+    --fs-license-file /opt/license.txt
+    --input-type fmriprep
+    --mode none
+    --file-format cifti
+    --atlases /OUTPUTS/xcpd-processors/atlases/CABNP/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR.dlabel.nii
+    --despike n
+    --fd-thresh 0.5
+    --censor-between 0
+    --disable-bandpass-filter
+    --nuisance-regressors acompcor
+    --output-type censored
+    --linc-qc
+    --min-coverage 0
+    --smoothing 0
+    --skip alff reho
+    /INPUTS/fmriprepBIDS/fmriprepBIDS
+    /OUTPUTS/xcpdBIDS
+    participant
+
+post:
+  type: singularity_exec
+  container: xcpd
+  args: >-
+    bash -c '
+    mkdir /OUTPUTS/HTML &&
+    cp /OUTPUTS/xcpdBIDS/sub-*.html /OUTPUTS/HTML &&
+    cp -R /OUTPUTS/xcpdBIDS/sub-* /OUTPUTS/HTML &&
+    rm -fr /OUTPUTS/HTML/sub-*/ses-* &&
+
+    export PATH=/OUTPUTS/xcpd-processors/scripts:\$PATH &&
+
+    qc_csv.py --xcpd_dir /OUTPUTS/xcpdBIDS --out_dir /OUTPUTS
+    '
