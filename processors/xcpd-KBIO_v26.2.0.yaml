@@ -55,6 +55,9 @@ command:
   container: xcpd
   extraopts: --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
   args: >-
+    /INPUTS/fmriprepBIDS/fmriprepBIDS
+    /OUTPUTS/xcpdBIDS
+    participant
     --work-dir /tmp
     --fs-license-file /opt/license.txt
     --input-type fmriprep
@@ -71,9 +74,12 @@ command:
     --min-coverage 0
     --smoothing 0
     --skip alff reho
-    /INPUTS/fmriprepBIDS/fmriprepBIDS
-    /OUTPUTS/xcpdBIDS
-    participant
+    --abcc-qc n
+    --combine-runs n
+    --motion-filter-type none
+    --output-run-wise-correlations n
+    --warp-surfaces-native2std n
+
 
 post:
   type: singularity_exec
