@@ -1,0 +1,15 @@
+{
+  "Name": "CABNP atlas for fsLR (91k) surfaces",
+  "BIDSVersion": "1.9.0",
+  "DatasetType": "atlas",
+  "HowToAcknowledge": "Please cite the CABNP atlas source (https://doi.org/10.1016/j.neuroimage.2018.10.006).",
+  "ReferencesAndLinks": [
+    "https://github.com/ColeLab/ColeAnticevicNetPartition"
+  ],
+  "GeneratedBy": [
+    {
+      "Name": "CABNP",
+      "Description": "External atlas dataset for XCP-D containing multiple CABNP parcellations in fsLR space (e.g., den-91k)."
+    }
+  ]
+}

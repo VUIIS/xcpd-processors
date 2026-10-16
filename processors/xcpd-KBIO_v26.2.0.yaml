@@ -29,7 +29,7 @@ inputs:
     assessors:
         
         - name: assr_fmriprep
-          proctypes: fmriprep-cifti-rest_v24
+          proctypes: fmriprep-ciftivol-rest_v24
           resources:
             - {resource: fmriprepBIDS, ftype: DIR, fdest: fmriprepBIDS}
 
@@ -63,7 +63,8 @@ command:
     --input-type fmriprep
     --mode none
     --file-format cifti
-    --atlases /OUTPUTS/xcpd-processors/atlases/CABNP/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR.dlabel.nii
+    --datasets /OUTPUTS/xcpd-processors/atlases/CABNP
+    --atlases CABNPwSubcorGSR
     --despike n
     --fd-thresh 0.5
     --censor-between 0
