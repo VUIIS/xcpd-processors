@@ -63,7 +63,7 @@ command:
     --input-type fmriprep
     --mode none
     --file-format cifti
-    --datasets /OUTPUTS/xcpd-processors/atlases/CABNP
+    --datasets /OUTPUTS/xcpd-processors/atlases/CABNP/derivatives/CABNPAtlases
     --atlases CABNPwSubcorGSR
     --despike n
     --fd-thresh 0.5
