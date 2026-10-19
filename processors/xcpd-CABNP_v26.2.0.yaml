@@ -45,7 +45,7 @@ pre:
   args: >-
     bash -c '
     cd /OUTPUTS &&
-    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.9.5.tar.gz &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.9.6.tar.gz &&
     tar -zxf xcpd-processors.tar.gz &&
     mv xcpd-processors-* xcpd-processors
     '
@@ -61,6 +61,7 @@ command:
     /OUTPUTS/xcpdBIDS
     participant
     --work-dir /tmp
+    --bids-database-dir /tmp/pybids_db
     --fs-license-file /opt/license.txt
     --input-type fmriprep
     --mode none

@@ -7,11 +7,6 @@
              "directory": "{tpl}"
         },
         {
-             "name": "template",
-             "pattern": "template-([a-zA-Z0-9]+)",
-             "directory": "{template}"
-        },
-        {
             "name": "subject",
             "pattern": "[/\\\\]+sub-([a-zA-Z0-9+]+)",
             "directory": "{subject}"
