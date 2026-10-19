@@ -55,7 +55,7 @@ command:
   container: xcpd
   extraopts: >-
     --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
-    --bind /OUTPUTS/xcpd-processors/atlases/CABNP/bids.json:/app/.pixi/envs/xcp-d/lib/python3.12/site-packages/bids/layout/config/bids.json
+    --bind $OUTDIR/xcpd-processors/atlases/CABNP/bids.json:/app/.pixi/envs/xcp-d/lib/python3.12/site-packages/bids/layout/config/bids.json
   args: >-
     /INPUTS/fmriprepBIDS/fmriprepBIDS
     /OUTPUTS/xcpdBIDS
