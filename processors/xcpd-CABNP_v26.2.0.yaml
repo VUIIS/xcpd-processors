@@ -45,7 +45,7 @@ pre:
   args: >-
     bash -c '
     cd /OUTPUTS &&
-    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.9.5.tar.gz &&
+    curl -o xcpd-processors.tar.gz -L https://github.com/VUIIS/xcpd-processors/archive/refs/tags/v2.9.6.tar.gz &&
     tar -zxf xcpd-processors.tar.gz &&
     mv xcpd-processors-* xcpd-processors
     '
@@ -53,7 +53,9 @@ pre:
 command:
   type: singularity_run
   container: xcpd
-  extraopts: --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
+  extraopts: >-
+    --bind /data/mcr/centos7/FS6/license.txt:/opt/license.txt
+    --bind /OUTPUTS/xcpd-processors/atlases/CABNP/bids.json:/app/.pixi/envs/xcp-d/lib/python3.12/site-packages/bids/layout/config/bids.json
   args: >-
     /INPUTS/fmriprepBIDS/fmriprepBIDS
     /OUTPUTS/xcpdBIDS
