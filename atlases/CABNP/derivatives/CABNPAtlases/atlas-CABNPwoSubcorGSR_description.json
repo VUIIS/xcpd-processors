@@ -1,0 +1,16 @@
+{
+  "AtlasName": "CABNPwoSubcorGSR",
+  "Description": "Cole-Anticevic Brain-wide Network Partition (CABNP) withOUT subcortical parcels. Packaged for XCP-D consumption.",
+  "NativeCoordinateSpace": "fsLR",
+  "SpatialReference": "fsLR",
+  "Density": "91k",
+  "AtlasType": "dseg",
+  "Files": [
+    {
+      "Space": "fsLR",
+      "Density": "91k",
+      "File": "atlases/tpl-fsLR_atlas-CABNPwoSubcorGSR_den-91k_dseg.dlabel.nii",
+      "TSV": "atlases/tpl-fsLR_atlas-CABNPwoSubcorGSR_den-91k_dseg.tsv"
+    }
+  ]
+}
